@@ -54,4 +54,7 @@
 
     <!-- 浮動 Tab 頁籤列 -->
     <div class="absolute bottom-6 right-4 flex space-x-2 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/20 shadow-lg">
-      <button v-for="tab in tabs" :key="tab.id"
+      <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
+              :class="['px-3 py-1.5 rounded-full text-xs font-medium flex items-center space-x-1.5 transition-all duration-300', 
+                       currentTab === tab.id ? 'bg-kuma-red text-white shadow-md scale-105' : 'text-gray-200 hover:text-white']">
+        <i :class="tab.icon"></i>
