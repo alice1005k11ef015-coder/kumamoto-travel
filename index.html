@@ -63,12 +63,11 @@
     </div>
   </div>
 
-  <!-- 主內容區（弧形銜接 & 負邊距） -->
+  <!-- 主內容區 -->
   <div class="relative -mt-5 bg-kuma-bg rounded-t-[24px] px-4 pt-4 min-h-[calc(100vh-230px)] z-10">
 
     <!-- 1. 每日行程表 Tab -->
     <div v-if="currentTab === 'itinerary'" class="space-y-4">
-      <!-- 天氣資訊卡片 -->
       <div class="bg-white/80 backdrop-blur rounded-2xl p-3 shadow-sm border border-white/50 flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 text-xl">
@@ -84,7 +83,6 @@
         </div>
       </div>
 
-      <!-- 橫向滑動日期選單 -->
       <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
         <button v-for="(day, idx) in days" :key="idx" @click="selectedDayIdx = idx"
                 :class="['flex-none w-16 py-2 rounded-xl flex flex-col items-center transition-all duration-200 border',
@@ -94,10 +92,8 @@
         </button>
       </div>
 
-      <!-- 行程列表 -->
       <div id="itinerary-list" class="space-y-3 pt-1">
         <div v-for="(item, index) in currentDayItems" :key="item.id" :data-id="item.id" class="relative group">
-          
           <div v-if="index > 0" class="flex items-center justify-center space-x-2 my-2 text-xs text-gray-500 font-medium">
             <div class="h-px bg-gray-300 flex-1"></div>
             <div class="bg-white/90 px-3 py-1 rounded-full shadow-xs border border-gray-200 flex items-center space-x-1.5">
@@ -107,7 +103,6 @@
             <div class="h-px bg-gray-300 flex-1"></div>
           </div>
 
-          <!-- 航班專用卡片 -->
           <div v-if="item.category === 'flight'" @click="openGoogleMap(item)"
                class="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-4 shadow-md relative overflow-hidden border border-gray-700 cursor-pointer">
             <div class="absolute right-3 top-3 opacity-10 text-6xl"><i class="fa-solid fa-plane"></i></div>
@@ -122,7 +117,6 @@
             </div>
           </div>
 
-          <!-- 一般行程卡片 -->
           <div v-else class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
             <div class="flex justify-between items-start mb-2">
               <div class="flex items-center space-x-2">
@@ -265,23 +259,14 @@
           </button>
         </div>
       </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-          <h4 class="font-bold text-xs text-gray-800 mb-1"><i class="fa-solid fa-kit-medical text-kuma-red mr-1"></i>緊急連絡</h4>
-          <p class="text-[11px] text-gray-500">警察：110</p>
-          <p class="text-[11px] text-gray-500">救護車：119</p>
-        </div>
-      </div>
     </div>
 
-    <!-- 4. 注意事項 Tab (新增圖片與移除標記) -->
+    <!-- 4. 注意事項 Tab -->
     <div v-if="currentTab === 'notes'" class="space-y-4">
       <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div>
       </div>
 
-      <!-- 租車資訊卡片 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center">
           <i class="fa-solid fa-car text-kuma-red mr-2"></i>租車櫃檯位置
@@ -292,22 +277,17 @@
         </div>
       </div>
 
-      <!-- 機場通關指南 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
           <i class="fa-solid fa-plane-circle-check text-kuma-red mr-2"></i>機場國內線商店街通關指南
         </h3>
-        
         <div class="text-[11px] text-red-600 font-bold bg-red-50 p-2.5 rounded-lg border border-red-100 mb-3 leading-relaxed">
           持有國際機票的旅客，不能直接過去國內線商店街，要先過國際線安檢，才會有通道讓你過去國內線商店街。
         </div>
 
-        <!-- 插入圖二 (指標圖) -->
         <div class="mb-3 rounded-lg overflow-hidden border border-gray-200">
           <img src="image_9a8a5c.jpg" alt="機場動線指標圖" class="w-full object-cover">
         </div>
-        
-        <!-- 插入圖三 (平面圖) -->
         <div class="mb-4 rounded-lg overflow-hidden border border-gray-200">
           <img src="image_9a8a23.jpg" alt="機場平面圖" class="w-full object-cover">
         </div>
@@ -322,7 +302,6 @@
           <li>出國審查（檢查護照）</li>
           <li>前往登機門候機</li>
         </ol>
-        
         <div class="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400">
           * 熊本機場商店和餐廳介紹，可以在熊本機場官網找到。
         </div>
@@ -331,16 +310,24 @@
 
     <!-- 5. 購物清單 Tab -->
     <div v-if="currentTab === 'shopping'" class="space-y-4">
+      <div class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-2xl p-4 shadow-md text-center">
+        <div class="text-base font-black tracking-wider"><i class="fa-solid fa-basket-shopping mr-2"></i>必買伴手禮清單</div>
+      </div>
+
       <div class="grid grid-cols-2 gap-3">
         <div v-for="item in shoppingList" :key="item.id" class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between">
           <div>
-            <div class="w-full h-28 bg-gray-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center relative">
-              <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
-              <i v-else class="fa-solid fa-basket-shopping text-3xl text-gray-300"></i>
+            <div class="w-full h-28 bg-gray-50 rounded-xl mb-2 overflow-hidden flex items-center justify-center relative border border-gray-100">
+              <img v-if="item.image" :src="item.image" class="w-full h-full object-cover" @error="item.image=''">
+              <i v-if="!item.image" :class="[item.icon || 'fa-solid fa-basket-shopping', item.color || 'text-gray-300']" class="text-4xl drop-shadow-sm"></i>
             </div>
-            <div class="font-bold text-xs text-gray-800 line-clamp-2">{{ item.name }}</div>
+            <div class="font-bold text-xs text-gray-800 line-clamp-2 leading-snug">{{ item.name }}</div>
+            <div v-if="item.where" class="text-[10px] text-gray-500 mt-1.5 leading-relaxed">
+              <span class="text-purple-600 font-bold block mb-0.5"><i class="fa-solid fa-store mr-1"></i>哪裡買：</span>
+              {{ item.where }}
+            </div>
           </div>
-          <button @click="deleteShoppingItem(item.id)" class="text-right text-xs text-red-400 mt-2 hover:text-red-600">
+          <button @click="deleteShoppingItem(item.id)" class="text-right text-xs text-red-400 mt-2 hover:text-red-600 self-end">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -380,8 +367,10 @@
     <i class="fa-solid fa-plus"></i>
   </button>
 
-  <!-- Modal 彈出視窗（新增/編輯行程） -->
-  <div v-if="showItineraryModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <!-- ==================== 彈出視窗區塊 (已修復重複與卡住問題) ==================== -->
+  
+  <!-- Modal: 新增/編輯行程 -->
+  <div v-if="showItineraryModal" @click.self="showItineraryModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">{{ isEditing ? '編輯行程' : '新增行程' }}</h3>
       <div>
@@ -419,13 +408,17 @@
     </div>
   </div>
 
-  <!-- Modal 購物清單新增 -->
-  <div v-if="showShoppingModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <!-- Modal: 購物清單新增 -->
+  <div v-if="showShoppingModal" @click.self="showShoppingModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">新增想買物品</h3>
       <div>
         <label class="text-xs text-gray-400">商品名稱</label>
         <input v-model="newShopping.name" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="例如：藥妝、熊本熊周邊">
+      </div>
+      <div>
+        <label class="text-xs text-gray-400">哪裡買</label>
+        <input v-model="newShopping.where" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="購買地點或門市名稱">
       </div>
       <div>
         <label class="text-xs text-gray-400">照片上傳</label>
@@ -438,8 +431,8 @@
     </div>
   </div>
 
-  <!-- Modal 花費新增 -->
-  <div v-if="showExpenseModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <!-- Modal: 花費新增 -->
+  <div v-if="showExpenseModal" @click.self="showExpenseModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">新增花費</h3>
       <div>
@@ -450,11 +443,11 @@
       </div>
       <div>
         <label class="text-xs text-gray-400">項目名稱</label>
-        <input v-model="newExpense.name" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
+        <input v-model="newExpense.name" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="例如：晚餐拉麵">
       </div>
       <div>
         <label class="text-xs text-gray-400">金額 (日幣 JPY)</label>
-        <input v-model.number="newExpense.amount" type="number" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
+        <input v-model.number="newExpense.amount" type="number" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="請輸入金額數字">
       </div>
       <div>
         <label class="text-xs text-gray-400">付款方式</label>
@@ -595,6 +588,10 @@
       };
 
       const saveItinerary = () => {
+        if (!formItem.value.title) {
+          alert('請輸入地點名稱！');
+          return;
+        }
         if (isEditing.value) {
           const idx = itineraryData.value[selectedDayIdx.value].findIndex(i => i.id === formItem.value.id);
           if (idx !== -1) itineraryData.value[selectedDayIdx.value][idx] = { ...formItem.value };
@@ -613,10 +610,14 @@
 
       const showShoppingModal = ref(false);
       const shoppingList = ref([
-        { id: 1, name: '熊本熊限量娃娃', image: '' },
-        { id: 2, name: '陣太鼓 (熊本特產)', image: '' }
+        { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
+        { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
+        { id: 3, name: '阿蘇牛乳', where: '熊本站「肥後よかモン市場」ASO MILK＋plus 門市。', image: 'image_a0b23f.jpg', icon: 'fa-solid fa-cow', color: 'text-blue-500' },
+        { id: 4, name: '阿蘇高菜漬／高菜拌飯素', where: '古じょう庵 熊本站店（肥後よかモン市場）、市區門市。', image: 'image_9c3d4a.jpg', icon: 'fa-solid fa-bowl-rice', color: 'text-green-600' },
+        { id: 5, name: '熊本拉麵禮盒 (黑油蒜香系)', where: '品牌門市、車站商場與土產店。', image: 'image_f83a21.jpg', icon: 'fa-solid fa-bowl-food', color: 'text-orange-600' },
+        { id: 6, name: '地之鹽社「山鹿溫泉・櫻湯化妝水」', where: '山鹿溫泉「さくら湯」與品牌官網通路。', image: 'image_e02a43.jpg', icon: 'fa-solid fa-pump-soap', color: 'text-pink-400' }
       ]);
-      const newShopping = ref({ name: '', image: '' });
+      const newShopping = ref({ name: '', where: '', image: '' });
 
       const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -628,11 +629,13 @@
       };
 
       const addShoppingItem = () => {
-        if (newShopping.value.name) {
-          shoppingList.value.push({ id: Date.now(), ...newShopping.value });
-          newShopping.value = { name: '', image: '' };
-          showShoppingModal.value = false;
+        if (!newShopping.value.name) {
+          alert('請至少輸入商品名稱！');
+          return;
         }
+        shoppingList.value.push({ id: Date.now(), ...newShopping.value });
+        newShopping.value = { name: '', where: '', image: '' };
+        showShoppingModal.value = false;
       };
 
       const deleteShoppingItem = (id) => {
@@ -648,11 +651,13 @@
       const totalExpense = computed(() => expenses.value.reduce((sum, item) => sum + (item.amount || 0), 0));
 
       const addExpense = () => {
-        if (newExpense.value.name && newExpense.value.amount) {
-          expenses.value.push({ id: Date.now(), ...newExpense.value });
-          newExpense.value = { category: '飲食', name: '', amount: 0, payment: '現金', date: '2027/04/23' };
-          showExpenseModal.value = false;
+        if (!newExpense.value.name || !newExpense.value.amount) {
+          alert('請輸入花費的「項目名稱」與「金額」！');
+          return;
         }
+        expenses.value.push({ id: Date.now(), ...newExpense.value });
+        newExpense.value = { category: '飲食', name: '', amount: 0, payment: '現金', date: '2027/04/23' };
+        showExpenseModal.value = false;
       };
 
       const deleteExpense = (id) => {
