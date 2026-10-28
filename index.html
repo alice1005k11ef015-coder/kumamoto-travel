@@ -268,10 +268,6 @@
 
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-          <h4 class="font-bold text-xs text-gray-800 mb-1"><i class="fa-solid fa-car text-kuma-red mr-1"></i>租車資訊</h4>
-          <p class="text-[11px] text-gray-500">尚未租車（可於此補充租車公司與取車地點）</p>
-        </div>
-        <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
           <h4 class="font-bold text-xs text-gray-800 mb-1"><i class="fa-solid fa-kit-medical text-kuma-red mr-1"></i>緊急連絡</h4>
           <p class="text-[11px] text-gray-500">警察：110</p>
           <p class="text-[11px] text-gray-500">救護車：119</p>
@@ -279,7 +275,61 @@
       </div>
     </div>
 
-    <!-- 4. 購物清單 Tab -->
+    <!-- 4. 注意事項 Tab (新增圖片與移除標記) -->
+    <div v-if="currentTab === 'notes'" class="space-y-4">
+      <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center">
+        <div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div>
+      </div>
+
+      <!-- 租車資訊卡片 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center">
+          <i class="fa-solid fa-car text-kuma-red mr-2"></i>租車櫃檯位置
+        </h3>
+        <div class="text-xs text-gray-600 space-y-1.5">
+          <p>位於抵達大廳 1 樓的歡迎廣場正前方。</p>
+          <p><span class="font-bold text-gray-800">櫃檯服務時間：</span>09:00 至 18:00</p>
+        </div>
+      </div>
+
+      <!-- 機場通關指南 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
+          <i class="fa-solid fa-plane-circle-check text-kuma-red mr-2"></i>機場國內線商店街通關指南
+        </h3>
+        
+        <div class="text-[11px] text-red-600 font-bold bg-red-50 p-2.5 rounded-lg border border-red-100 mb-3 leading-relaxed">
+          持有國際機票的旅客，不能直接過去國內線商店街，要先過國際線安檢，才會有通道讓你過去國內線商店街。
+        </div>
+
+        <!-- 插入圖二 (指標圖) -->
+        <div class="mb-3 rounded-lg overflow-hidden border border-gray-200">
+          <img src="image_9a8a5c.jpg" alt="機場動線指標圖" class="w-full object-cover">
+        </div>
+        
+        <!-- 插入圖三 (平面圖) -->
+        <div class="mb-4 rounded-lg overflow-hidden border border-gray-200">
+          <img src="image_9a8a23.jpg" alt="機場平面圖" class="w-full object-cover">
+        </div>
+        
+        <div class="text-xs text-gray-600 font-bold mb-2">通關與逛街流程：</div>
+        <ol class="text-xs text-gray-600 space-y-2 list-decimal list-inside marker:text-gray-400 pl-1 leading-relaxed">
+          <li>完成國際線報到和托運行李，並領取登機證</li>
+          <li>通過手提行李安檢</li>
+          <li>往國內線方向走，在入口出示護照 + 登機證</li>
+          <li>自由逛，買東西、吃東西都可以</li>
+          <li class="text-kuma-red font-bold">登機前 60 分鐘必須回到國際線安檢區，手提行李要重新檢查一次</li>
+          <li>出國審查（檢查護照）</li>
+          <li>前往登機門候機</li>
+        </ol>
+        
+        <div class="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400">
+          * 熊本機場商店和餐廳介紹，可以在熊本機場官網找到。
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 購物清單 Tab -->
     <div v-if="currentTab === 'shopping'" class="space-y-4">
       <div class="grid grid-cols-2 gap-3">
         <div v-for="item in shoppingList" :key="item.id" class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between">
@@ -297,7 +347,7 @@
       </div>
     </div>
 
-    <!-- 5. 花費 Tab -->
+    <!-- 6. 花費 Tab -->
     <div v-if="currentTab === 'expense'" class="space-y-4">
       <div class="bg-gradient-to-r from-kuma-black to-gray-800 text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-xs text-gray-300">累積總花費</div>
@@ -325,7 +375,7 @@
   </div>
 
   <!-- 右下角浮動新增按鈕 (+) -->
-  <button v-if="currentTab !== 'info' && currentTab !== 'food'" @click="openAddModal"
+  <button v-if="currentTab !== 'info' && currentTab !== 'food' && currentTab !== 'notes'" @click="openAddModal"
           class="fixed bottom-6 right-6 w-14 h-14 bg-kuma-red text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-110 active:scale-95 transition-all">
     <i class="fa-solid fa-plus"></i>
   </button>
@@ -431,6 +481,7 @@
         { id: 'itinerary', name: '行程', icon: 'fa-solid fa-map-location-dot' },
         { id: 'food', name: '美食', icon: 'fa-solid fa-utensils' },
         { id: 'info', name: '資訊', icon: 'fa-solid fa-circle-info' },
+        { id: 'notes', name: '注意', icon: 'fa-solid fa-triangle-exclamation' },
         { id: 'shopping', name: '購物', icon: 'fa-solid fa-basket-shopping' },
         { id: 'expense', name: '花費', icon: 'fa-solid fa-coins' }
       ];
@@ -449,7 +500,6 @@
       const fxJpy = ref(1000);
       const calculatedTwd = computed(() => Math.round((fxJpy.value || 0) * exchangeRate.value));
 
-      // 必吃美食資料清單 - 新增寿司虎
       const mustEatList = ref([
         { id: 1, name: '黑亭拉麵', address: '熊本市西区二本木2丁目1-23', transport: '熊本車站步行8分鐘', hours: '10:30〜21:00', off: '無定休' },
         { id: 2, name: '勝烈亭豬排 (熊本車站店)', address: '熊本市西区春日3-15−26', transport: '熊本車站步行1分鐘', hours: '11:00~22:00', off: '無定休' },
@@ -463,36 +513,30 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時' }
       ]);
 
-      // 5天行程規劃 - D1 加入壽司虎午餐
       const itineraryData = ref([
-        // D1
         [
           { id: '1-1', category: 'flight', title: '高雄小港(KHH) ➔ 熊本(KMJ) IT766', location: '熊本機場', time: '08:45 起飛 / 11:50 抵達', note: '抵達後前往飯店 Check-in', transportType: 'car', travelTime: '35' },
           { id: '1-2', category: 'food', title: '寿司虎 熊本菊陽店 (午餐)', hours: '平日 11:30 - 15:00', note: '人氣迴轉壽司，建議提前預約', transportType: 'car', travelTime: '15' },
           { id: '1-3', category: 'spot', title: '熊本熊廣場', hours: '10:00 - 19:00', ticket: '免費', note: '與部長見面，選購限定周邊', transportType: 'car', travelTime: '25' },
           { id: '1-4', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本勝烈亭豬排', transportType: 'walk', travelTime: '5' }
         ],
-        // D2
         [
           { id: '2-1', category: 'spot', title: '菊池溪谷', hours: '08:30 - 17:00', ticket: '維持協力金 300日圓', note: '絕美自然溪谷，享受森林浴', transportType: 'car', travelTime: '60' },
           { id: '2-2', category: 'spot', title: '山鹿溫泉區 / 百年劇場-八千代座', hours: '09:00 - 18:00', ticket: '成人 530日圓', note: '漫步復古街道，參觀國家重要文化財', transportType: 'car', travelTime: '40' },
           { id: '2-3', category: 'food', title: 'Once Upon an Egg 雞蛋專門店', hours: '10:00 - 17:00', note: '品嚐美味雞蛋料理與甜點', transportType: 'walk', travelTime: '5' }
         ],
-        // D3
         [
           { id: '3-1', category: 'other', title: '前往福岡 (約1.5小時)', hours: '-', note: '搭乘新幹線或高速巴士', transportType: 'bus', travelTime: '90' },
           { id: '3-2', category: 'spot', title: '麵包超人兒童博物館', hours: '10:00 - 17:00', ticket: '1800日圓', note: '適合親子同樂', transportType: 'walk', travelTime: '15' },
           { id: '3-3', category: 'spot', title: '福岡 LaLaport (巨大鋼彈)', hours: '10:00 - 21:00', note: '必拍實體大鋼彈立像，百貨商場購物', transportType: 'car', travelTime: '20' },
           { id: '3-4', category: 'other', title: '返回熊本', hours: '-', note: '帶著滿滿戰利品回程', transportType: 'bus', travelTime: '90' }
         ],
-        // D4
         [
           { id: '4-1', category: 'spot', title: '阿蘇道の駅 (休息站)', hours: '09:00 - 18:00', note: '品嚐阿蘇牛奶與在地特產', transportType: 'car', travelTime: '60' },
           { id: '4-2', category: 'spot', title: '阿蘇火山口', hours: '09:00 - 17:00 (視天候)', ticket: '依接駁車/過路費而定', note: '近距離感受火山口震撼', transportType: 'car', travelTime: '30' },
           { id: '4-3', category: 'spot', title: '草千里', hours: '全天開放', note: '遼闊草原與馬匹，可在草千里咖啡廳休息', transportType: 'car', travelTime: '10' },
           { id: '4-4', category: 'spot', title: '阿蘇神社', hours: '09:00 - 17:00', note: '歷史悠久，順遊門前町吃馬肉可樂餅', transportType: 'car', travelTime: '30' }
         ],
-        // D5
         [
           { id: '5-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'car', travelTime: '15' },
           { id: '5-2', category: 'shopping', title: '櫻町購物中心 (午餐)', hours: '10:00 - 20:00', note: '複合式大型購物中心，豐富美食街', transportType: 'bus', travelTime: '15' },
