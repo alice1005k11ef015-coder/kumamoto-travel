@@ -502,8 +502,8 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時' }
       ]);
 
-      // 行程資料 (已將 4/24 與 4/27 行程互調，回程航班保留在 4/27)
-      const itineraryData = ref([
+      // 原始資料
+      const initialItinerary = [
         [
           { id: '1-1', category: 'flight', title: '高雄小港(KHH) ➔ 熊本(KMJ) IT766', location: '熊本機場', time: '08:45 起飛 / 11:50 抵達', note: '抵達後前往飯店 Check-in', transportType: 'car', travelTime: '35' },
           { id: '1-2', category: 'food', title: '寿司虎 熊本菊陽店 (午餐)', hours: '平日 11:30 - 15:00', note: '人氣迴轉壽司，建議提前預約', transportType: 'car', travelTime: '15' },
@@ -533,7 +533,35 @@
           { id: '5-3', category: 'food', title: 'Once Upon an Egg 雞蛋專門店', hours: '10:00 - 17:00', note: '品嚐美味雞蛋料理與甜點', transportType: 'walk', travelTime: '5' },
           { id: '5-4', category: 'flight', title: '熊本(KMJ) ➔ 高雄小港(KHH) IT767', location: '熊本機場', time: '19:50 起飛 / 21:40 抵達', note: '準備搭機返回溫暖的家', transportType: 'car', travelTime: '60' }
         ]
-      ]);
+      ];
+
+      const initialShopping = [
+        { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
+        { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
+        { id: 3, name: '阿蘇牛乳', where: '熊本站「肥後よかモン市場」ASO MILK＋plus 門市。', image: 'image_a0b23f.jpg', icon: 'fa-solid fa-cow', color: 'text-blue-500' },
+        { id: 4, name: '阿蘇高菜漬／高菜拌飯素', where: '古じょう庵 熊本站店（肥後よかモン市場）、市區門市。', image: 'image_9c3d4a.jpg', icon: 'fa-solid fa-bowl-rice', color: 'text-green-600' },
+        { id: 5, name: '熊本拉麵禮盒 (黑油蒜香系)', where: '品牌門市、車站商場與土產店。', image: 'image_f83a21.jpg', icon: 'fa-solid fa-bowl-food', color: 'text-orange-600' },
+        { id: 6, name: '地之鹽社「山鹿溫泉・櫻湯化妝水」', where: '山鹿溫泉「さくら湯」與品牌官網通路。', image: 'image_e02a43.jpg', icon: 'fa-solid fa-pump-soap', color: 'text-pink-400' }
+      ];
+
+      const initialExpenses = [
+        { id: 1, category: '飲食', name: '勝烈亭炸豬排', date: '2027/04/23', amount: 2500, payment: '現金' }
+      ];
+
+      // ======= 加入 LocalStorage 自動存檔功能 =======
+      const loadData = (key, defaultData) => {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : defaultData;
+      };
+
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v2', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v2', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v2', initialExpenses));
+
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v2', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v2', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v2', JSON.stringify(newVal)), { deep: true });
+      // ===========================================
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -606,14 +634,6 @@
       };
 
       const showShoppingModal = ref(false);
-      const shoppingList = ref([
-        { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
-        { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
-        { id: 3, name: '阿蘇牛乳', where: '熊本站「肥後よかモン市場」ASO MILK＋plus 門市。', image: 'image_a0b23f.jpg', icon: 'fa-solid fa-cow', color: 'text-blue-500' },
-        { id: 4, name: '阿蘇高菜漬／高菜拌飯素', where: '古じょう庵 熊本站店（肥後よかモン市場）、市區門市。', image: 'image_9c3d4a.jpg', icon: 'fa-solid fa-bowl-rice', color: 'text-green-600' },
-        { id: 5, name: '熊本拉麵禮盒 (黑油蒜香系)', where: '品牌門市、車站商場與土產店。', image: 'image_f83a21.jpg', icon: 'fa-solid fa-bowl-food', color: 'text-orange-600' },
-        { id: 6, name: '地之鹽社「山鹿溫泉・櫻湯化妝水」', where: '山鹿溫泉「さくら湯」與品牌官網通路。', image: 'image_e02a43.jpg', icon: 'fa-solid fa-pump-soap', color: 'text-pink-400' }
-      ]);
       const newShopping = ref({ name: '', where: '', image: '' });
 
       const handleFileUpload = (e) => {
@@ -640,9 +660,6 @@
       };
 
       const showExpenseModal = ref(false);
-      const expenses = ref([
-        { id: 1, category: '飲食', name: '勝烈亭炸豬排', date: '2027/04/23', amount: 2500, payment: '現金' }
-      ]);
       const newExpense = ref({ category: '飲食', name: '', amount: 0, payment: '現金', date: '2027/04/23' });
 
       const totalExpense = computed(() => expenses.value.reduce((sum, item) => sum + (item.amount || 0), 0));
