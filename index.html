@@ -367,9 +367,7 @@
     <i class="fa-solid fa-plus"></i>
   </button>
 
-  <!-- ==================== 彈出視窗區塊 (已修復重複與卡住問題) ==================== -->
-  
-  <!-- Modal: 新增/編輯行程 -->
+  <!-- Modal 彈出視窗區塊 -->
   <div v-if="showItineraryModal" @click.self="showItineraryModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">{{ isEditing ? '編輯行程' : '新增行程' }}</h3>
@@ -408,7 +406,6 @@
     </div>
   </div>
 
-  <!-- Modal: 購物清單新增 -->
   <div v-if="showShoppingModal" @click.self="showShoppingModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">新增想買物品</h3>
@@ -431,7 +428,6 @@
     </div>
   </div>
 
-  <!-- Modal: 花費新增 -->
   <div v-if="showExpenseModal" @click.self="showExpenseModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">新增花費</h3>
@@ -506,6 +502,7 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時' }
       ]);
 
+      // 行程資料 (已將 4/24 與 4/27 行程互調，回程航班保留在 4/27)
       const itineraryData = ref([
         [
           { id: '1-1', category: 'flight', title: '高雄小港(KHH) ➔ 熊本(KMJ) IT766', location: '熊本機場', time: '08:45 起飛 / 11:50 抵達', note: '抵達後前往飯店 Check-in', transportType: 'car', travelTime: '35' },
@@ -514,9 +511,9 @@
           { id: '1-4', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本勝烈亭豬排', transportType: 'walk', travelTime: '5' }
         ],
         [
-          { id: '2-1', category: 'spot', title: '菊池溪谷', hours: '08:30 - 17:00', ticket: '維持協力金 300日圓', note: '絕美自然溪谷，享受森林浴', transportType: 'car', travelTime: '60' },
-          { id: '2-2', category: 'spot', title: '山鹿溫泉區 / 百年劇場-八千代座', hours: '09:00 - 18:00', ticket: '成人 530日圓', note: '漫步復古街道，參觀國家重要文化財', transportType: 'car', travelTime: '40' },
-          { id: '2-3', category: 'food', title: 'Once Upon an Egg 雞蛋專門店', hours: '10:00 - 17:00', note: '品嚐美味雞蛋料理與甜點', transportType: 'walk', travelTime: '5' }
+          { id: '2-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'car', travelTime: '15' },
+          { id: '2-2', category: 'shopping', title: '櫻町購物中心 (午餐)', hours: '10:00 - 20:00', note: '複合式大型購物中心，豐富美食街', transportType: 'bus', travelTime: '15' },
+          { id: '2-3', category: 'spot', title: '水前寺成趣園', hours: '08:30 - 17:00', ticket: '500日圓', note: '桃山式回遊庭園，景色優美', transportType: 'car', travelTime: '15' }
         ],
         [
           { id: '3-1', category: 'other', title: '前往福岡 (約1.5小時)', hours: '-', note: '搭乘新幹線或高速巴士', transportType: 'bus', travelTime: '90' },
@@ -531,10 +528,10 @@
           { id: '4-4', category: 'spot', title: '阿蘇神社', hours: '09:00 - 17:00', note: '歷史悠久，順遊門前町吃馬肉可樂餅', transportType: 'car', travelTime: '30' }
         ],
         [
-          { id: '5-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'car', travelTime: '15' },
-          { id: '5-2', category: 'shopping', title: '櫻町購物中心 (午餐)', hours: '10:00 - 20:00', note: '複合式大型購物中心，豐富美食街', transportType: 'bus', travelTime: '15' },
-          { id: '5-3', category: 'spot', title: '水前寺成趣園', hours: '08:30 - 17:00', ticket: '500日圓', note: '桃山式回遊庭園，景色優美', transportType: 'car', travelTime: '15' },
-          { id: '5-4', category: 'flight', title: '熊本(KMJ) ➔ 高雄小港(KHH) IT767', location: '熊本機場', time: '19:50 起飛 / 21:40 抵達', note: '準備搭機返回溫暖的家', transportType: 'car', travelTime: '40' }
+          { id: '5-1', category: 'spot', title: '菊池溪谷', hours: '08:30 - 17:00', ticket: '維持協力金 300日圓', note: '絕美自然溪谷，享受森林浴', transportType: 'car', travelTime: '60' },
+          { id: '5-2', category: 'spot', title: '山鹿溫泉區 / 百年劇場-八千代座', hours: '09:00 - 18:00', ticket: '成人 530日圓', note: '漫步復古街道，參觀國家重要文化財', transportType: 'car', travelTime: '40' },
+          { id: '5-3', category: 'food', title: 'Once Upon an Egg 雞蛋專門店', hours: '10:00 - 17:00', note: '品嚐美味雞蛋料理與甜點', transportType: 'walk', travelTime: '5' },
+          { id: '5-4', category: 'flight', title: '熊本(KMJ) ➔ 高雄小港(KHH) IT767', location: '熊本機場', time: '19:50 起飛 / 21:40 抵達', note: '準備搭機返回溫暖的家', transportType: 'car', travelTime: '60' }
         ]
       ]);
 
