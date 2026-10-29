@@ -158,7 +158,7 @@
     <!-- 2. 必吃美食 Tab -->
     <div v-if="currentTab === 'food'" class="space-y-4">
       <div class="bg-gradient-to-r from-amber-500 to-orange-400 text-white rounded-2xl p-4 shadow-md text-center">
-        <div class="text-base font-black tracking-wider"><i class="fa-solid fa-utensils mr-2"></i>必吃美食清單</div>
+        <div class="text-base font-black tracking-wider"><i class="fa-solid fa-utensils mr-2"></i>必吃美食推薦</div>
       </div>
 
       <div v-for="food in mustEatList" :key="food.id" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
@@ -315,10 +315,13 @@
           <li>出國審查（檢查護照）</li>
           <li>前往登機門候機</li>
         </ol>
+        <div class="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400">
+          * 熊本機場商店和餐廳介紹，可以在熊本機場官網找到。
+        </div>
       </div>
     </div>
 
-    <!-- 5. 實用日語 Tab -->
+    <!-- 5. 實用日語 Tab (新增咖啡廳與居酒屋) -->
     <div v-if="currentTab === 'japanese'" class="space-y-4">
       <div class="bg-gradient-to-r from-cyan-600 to-blue-500 text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-language mr-2"></i>實用旅遊日語</div>
@@ -566,7 +569,7 @@
       const fxJpy = ref(1000);
       const calculatedTwd = computed(() => Math.round((fxJpy.value || 0) * exchangeRate.value));
 
-      // ====== 實用日語發音與資料庫 ======
+      // ====== 實用日語發音與資料庫 (新增咖啡廳與居酒屋) ======
       const japanesePhrases = ref([
         {
           category: "👋 基本問候",
@@ -578,7 +581,7 @@
           ]
         },
         {
-          category: "🛒 購物與點餐",
+          category: "🛒 購物與一般點餐",
           phrases: [
             { zh: "請給我這個", jp: "これをください", romaji: "Kore o kudasai" },
             { zh: "請問多少錢？", jp: "いくらですか？", romaji: "Ikura desu ka?" },
@@ -587,6 +590,25 @@
             { zh: "我要外帶", jp: "持ち帰りでお願いします", romaji: "Mochikaeri de onegaishimasu" },
             { zh: "請問這個會辣嗎？", jp: "これは辛いですか？", romaji: "Kore wa karai desu ka?" },
             { zh: "這個有肉嗎？", jp: "これに肉は入っていますか？", romaji: "Kore ni niku wa haitte imasu ka?" }
+          ]
+        },
+        {
+          category: "☕ 咖啡廳專用",
+          phrases: [
+            { zh: "我要內用", jp: "店内でお願いします", romaji: "Tennai de onegaishimasu" },
+            { zh: "我要熱的 / 冰的", jp: "ホット / アイス でお願いします", romaji: "Hotto / Aisu de onegaishimasu" },
+            { zh: "請給我少冰 / 去冰", jp: "氷少なめ / 氷なし でお願いします", romaji: "Koori sukuname / Koori nashi de onegaishimasu" },
+            { zh: "甜度正常 / 半糖", jp: "甘さ普通 / 控えめ でお願いします", romaji: "Amasa futsuu / hikaeme de onegaishimasu" }
+          ]
+        },
+        {
+          category: "🍻 居酒屋實用句",
+          phrases: [
+            { zh: "總之先來杯生啤酒！", jp: "とりあえず生で！", romaji: "Toriaezu nama de!" },
+            { zh: "有推薦的菜色嗎？", jp: "おすすめはありますか？", romaji: "Osusume wa arimasu ka?" },
+            { zh: "我要加點這個", jp: "これを追加でお願いします", romaji: "Kore o tsuika de onegaishimasu" },
+            { zh: "請給我小盤子(分食)", jp: "取り皿をください", romaji: "Torizara o kudasai" },
+            { zh: "我們想要分開結帳", jp: "別々でお会計できますか？", romaji: "Betsubetsu de okaikei dekimasu ka?" }
           ]
         },
         {
