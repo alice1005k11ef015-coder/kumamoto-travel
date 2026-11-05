@@ -51,9 +51,12 @@
     <img src="Gemini_Generated_Image_zhncefzhncefzhnc.jpg" alt="Banner" class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20"></div>
     
-    <!-- 標題與倒數計時 -->
-    <div class="absolute top-4 left-4">
-      <div class="text-white font-bold text-lg tracking-wider drop-shadow-md">熊本‧九州之旅 2027 🇯🇵</div>
+    <!-- 標題與倒數計時 (已移至右側並修改為實體日本國旗) -->
+    <div class="absolute top-4 right-4 flex flex-col items-end">
+      <div class="text-white font-bold text-lg tracking-wider drop-shadow-md flex items-center justify-end">
+        熊本‧九州之旅 2027
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="w-6 h-4 ml-1.5 rounded-[2px] shadow-sm"><rect fill="#fff" width="900" height="600"/><circle fill="#bc002d" cx="450" cy="300" r="180"/></svg>
+      </div>
       <div v-if="daysLeft > 0" class="mt-1.5 inline-block bg-kuma-red/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm tracking-wider">
         <i class="fa-solid fa-plane-departure mr-1"></i>距離出發還剩 {{ daysLeft }} 天！
       </div>
@@ -284,13 +287,13 @@
       </div>
     </div>
 
-    <!-- 4. 注意事項 Tab (新增行李檢查清單) -->
+    <!-- 4. 注意事項 Tab -->
     <div v-if="currentTab === 'notes'" class="space-y-4">
       <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div>
       </div>
 
-      <!-- 行李檢查清單 (可打勾、自動儲存) -->
+      <!-- 行李檢查清單 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
           <i class="fa-solid fa-suitcase-rolling text-kuma-red mr-2"></i>出發前行李檢查清單
@@ -589,14 +592,11 @@
       const fxJpy = ref(1000);
       const calculatedTwd = computed(() => Math.round((fxJpy.value || 0) * exchangeRate.value));
 
-      // ====== 倒數計時計算 ======
       const targetDate = new Date('2027-04-23T00:00:00');
       const today = new Date();
-      // 確保不會出現負數
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
 
-      // ====== 行李檢查清單預設資料 ======
       const initialPackingList = [
         { id: 1, text: '護照 (確認效期六個月以上)', checked: false },
         { id: 2, text: '機票與列印的行程表', checked: false },
