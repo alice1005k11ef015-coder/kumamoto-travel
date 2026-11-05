@@ -38,6 +38,8 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* 自訂打勾方塊的顏色 */
+    .checkbox-kuma { accent-color: #E60012; }
   </style>
 </head>
 <body class="text-gray-800 antialiased pb-20 selection:bg-red-500 selection:text-white">
@@ -48,8 +50,16 @@
   <div class="relative w-full h-[250px] bg-gray-200 overflow-hidden">
     <img src="Gemini_Generated_Image_zhncefzhncefzhnc.jpg" alt="Banner" class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20"></div>
-    <div class="absolute top-4 left-4 text-white font-bold text-lg tracking-wider drop-shadow-md">
-      熊本‧九州之旅 2027 🇯🇵
+    
+    <!-- 標題與倒數計時 -->
+    <div class="absolute top-4 left-4">
+      <div class="text-white font-bold text-lg tracking-wider drop-shadow-md">熊本‧九州之旅 2027 🇯🇵</div>
+      <div v-if="daysLeft > 0" class="mt-1.5 inline-block bg-kuma-red/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm tracking-wider">
+        <i class="fa-solid fa-plane-departure mr-1"></i>距離出發還剩 {{ daysLeft }} 天！
+      </div>
+      <div v-else class="mt-1.5 inline-block bg-emerald-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm tracking-wider">
+        <i class="fa-solid fa-plane-departure mr-1"></i>旅途愉快！
+      </div>
     </div>
 
     <!-- 浮動 Tab 頁籤列 -->
@@ -274,10 +284,23 @@
       </div>
     </div>
 
-    <!-- 4. 注意事項 Tab -->
+    <!-- 4. 注意事項 Tab (新增行李檢查清單) -->
     <div v-if="currentTab === 'notes'" class="space-y-4">
       <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div>
+      </div>
+
+      <!-- 行李檢查清單 (可打勾、自動儲存) -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
+          <i class="fa-solid fa-suitcase-rolling text-kuma-red mr-2"></i>出發前行李檢查清單
+        </h3>
+        <div class="space-y-1.5">
+          <label v-for="item in packingList" :key="item.id" class="flex items-center space-x-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+            <input type="checkbox" v-model="item.checked" class="checkbox-kuma w-4 h-4 rounded border-gray-300 focus:ring-kuma-red">
+            <span :class="{'line-through text-gray-400': item.checked, 'text-gray-700 font-bold': !item.checked}" class="text-sm transition-all">{{ item.text }}</span>
+          </label>
+        </div>
       </div>
 
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
@@ -315,13 +338,10 @@
           <li>出國審查（檢查護照）</li>
           <li>前往登機門候機</li>
         </ol>
-        <div class="mt-4 pt-3 border-t border-gray-100 text-[10px] text-gray-400">
-          * 熊本機場商店和餐廳介紹，可以在熊本機場官網找到。
-        </div>
       </div>
     </div>
 
-    <!-- 5. 實用日語 Tab (新增咖啡廳與居酒屋) -->
+    <!-- 5. 實用日語 Tab -->
     <div v-if="currentTab === 'japanese'" class="space-y-4">
       <div class="bg-gradient-to-r from-cyan-600 to-blue-500 text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-language mr-2"></i>實用旅遊日語</div>
@@ -569,7 +589,26 @@
       const fxJpy = ref(1000);
       const calculatedTwd = computed(() => Math.round((fxJpy.value || 0) * exchangeRate.value));
 
-      // ====== 實用日語發音與資料庫 (新增咖啡廳與居酒屋) ======
+      // ====== 倒數計時計算 ======
+      const targetDate = new Date('2027-04-23T00:00:00');
+      const today = new Date();
+      // 確保不會出現負數
+      const diffTime = targetDate - today;
+      const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
+
+      // ====== 行李檢查清單預設資料 ======
+      const initialPackingList = [
+        { id: 1, text: '護照 (確認效期六個月以上)', checked: false },
+        { id: 2, text: '機票與列印的行程表', checked: false },
+        { id: 3, text: '日幣現金與信用卡', checked: false },
+        { id: 4, text: '日本上網卡 / eSIM', checked: false },
+        { id: 5, text: '換洗衣物與保暖外套', checked: false },
+        { id: 6, text: '手機充電器與行動電源', checked: false },
+        { id: 7, text: '個人常備藥品 (腸胃藥、止痛藥等)', checked: false },
+        { id: 8, text: '牙刷、刮鬍刀等盥洗用品', checked: false },
+        { id: 9, text: '雨具 / 輕便摺疊傘', checked: false }
+      ];
+
       const japanesePhrases = ref([
         {
           category: "👋 基本問候",
@@ -700,11 +739,13 @@
       const shoppingList = ref(loadData('kuma_shopping_2027_v2', initialShopping));
       const expenses = ref(loadData('kuma_expense_2027_v2', initialExpenses));
       const mustEatList = ref(loadData('kuma_food_2027_v2', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v2', initialPackingList));
 
       watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v2', JSON.stringify(newVal)), { deep: true });
       watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v2', JSON.stringify(newVal)), { deep: true });
       watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v2', JSON.stringify(newVal)), { deep: true });
       watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v2', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v2', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -910,7 +951,7 @@
         newExpense, totalExpense, addExpense, deleteExpense, getCategoryLabel, getCategoryBadgeClass,
         getTransportIcon, openGoogleMap, openDirectMap, 
         showFoodModal, isEditingFood, formFood, openEditFoodModal, saveFood, confirmDeleteFood,
-        japanesePhrases, speakJapanese
+        japanesePhrases, speakJapanese, daysLeft, packingList
       };
     }
   }).mount('#app');
