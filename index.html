@@ -38,7 +38,6 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    /* 自訂打勾方塊的顏色 */
     .checkbox-kuma { accent-color: #E60012; }
   </style>
 </head>
@@ -51,7 +50,7 @@
     <img src="Gemini_Generated_Image_zhncefzhncefzhnc.jpg" alt="Banner" class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20"></div>
     
-    <!-- 標題與倒數計時 (已移至右側並修改為實體日本國旗) -->
+    <!-- 標題與倒數計時 -->
     <div class="absolute top-4 right-4 flex flex-col items-end">
       <div class="text-white font-bold text-lg tracking-wider drop-shadow-md flex items-center justify-end">
         熊本‧九州之旅 2027
@@ -81,21 +80,24 @@
 
     <!-- 1. 每日行程表 Tab -->
     <div v-if="currentTab === 'itinerary'" class="space-y-4">
-      <div class="bg-white/80 backdrop-blur rounded-2xl p-3 shadow-sm border border-white/50 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 text-xl">
-            <i :class="weather.icon"></i>
+      
+      <!-- 真實即時雙城市天氣 (熊本與福岡) -->
+      <div class="grid grid-cols-2 gap-3">
+        <div v-for="w in weatherData" :key="w.city" class="bg-white/80 backdrop-blur rounded-2xl p-3 shadow-sm border border-white/50 flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div class="text-xs text-gray-600 font-bold tracking-wider"><i class="fa-solid fa-location-dot text-kuma-red mr-1"></i>{{ w.city }}即時</div>
+            <div :class="[w.bg, w.color]" class="w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-sm">
+              <i :class="w.icon"></i>
+            </div>
           </div>
-          <div>
-            <div class="text-xs text-gray-500 font-medium">熊本當地天氣</div>
-            <div class="text-sm font-bold text-gray-800">{{ weather.temp }}°C <span class="text-xs font-normal text-gray-500">(體感 {{ weather.feelsLike }}°C)</span></div>
+          <div class="flex items-end justify-between mt-1">
+            <div class="text-2xl font-black text-gray-800 leading-none">{{ w.temp }}<span class="text-xs font-bold text-gray-500 ml-0.5">°C</span></div>
+            <div class="text-[11px] font-bold text-gray-500 bg-white/60 px-1.5 py-0.5 rounded">{{ w.condition }}</div>
           </div>
-        </div>
-        <div class="text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium">
-          {{ weather.condition }}
         </div>
       </div>
 
+      <!-- 橫向日期選單 -->
       <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
         <button v-for="(day, idx) in days" :key="idx" @click="selectedDayIdx = idx"
                 :class="['flex-none w-16 py-2 rounded-xl flex flex-col items-center transition-all duration-200 border',
@@ -105,6 +107,7 @@
         </button>
       </div>
 
+      <!-- 行程列表 -->
       <div id="itinerary-list" class="space-y-3 pt-1">
         <div v-for="(item, index) in currentDayItems" :key="item.id" :data-id="item.id" class="relative group">
           <div v-if="index > 0" class="flex items-center justify-center space-x-2 my-2 text-xs text-gray-500 font-medium">
@@ -293,7 +296,6 @@
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div>
       </div>
 
-      <!-- 行李檢查清單 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
           <i class="fa-solid fa-suitcase-rolling text-kuma-red mr-2"></i>出發前行李檢查清單
@@ -587,7 +589,6 @@
       ];
       const selectedDayIdx = ref(0);
 
-      const weather = ref({ temp: 22, feelsLike: 21, condition: '多雲時晴', icon: 'fa-solid fa-sun' });
       const exchangeRate = ref(0.215);
       const fxJpy = ref(1000);
       const calculatedTwd = computed(() => Math.round((fxJpy.value || 0) * exchangeRate.value));
@@ -596,6 +597,47 @@
       const today = new Date();
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
+
+      // ===== 即時天氣 API 邏輯 =====
+      const weatherData = ref([
+        { city: '熊本', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
+        { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
+      ]);
+
+      const fetchWeather = async () => {
+        try {
+          // 熊本座標
+          const resK = await fetch('https://api.open-meteo.com/v1/forecast?latitude=32.80&longitude=130.71&current_weather=true');
+          const dataK = await resK.json();
+          // 福岡座標
+          const resF = await fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current_weather=true');
+          const dataF = await resF.json();
+
+          const parseWeather = (code) => {
+            if (code === 0) return { text: '晴天', icon: 'fa-solid fa-sun', color: 'text-amber-500', bg: 'bg-amber-100' };
+            if (code <= 3) return { text: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' };
+            if (code <= 48) return { text: '起霧', icon: 'fa-solid fa-smog', color: 'text-gray-400', bg: 'bg-gray-100' };
+            if (code <= 55) return { text: '毛毛雨', icon: 'fa-solid fa-cloud-rain', color: 'text-blue-400', bg: 'bg-blue-100' };
+            if (code <= 65) return { text: '下雨', icon: 'fa-solid fa-cloud-showers-heavy', color: 'text-blue-500', bg: 'bg-blue-100' };
+            if (code <= 77) return { text: '下雪', icon: 'fa-solid fa-snowflake', color: 'text-cyan-500', bg: 'bg-cyan-100' };
+            return { text: '雷雨', icon: 'fa-solid fa-bolt', color: 'text-purple-500', bg: 'bg-purple-100' };
+          };
+
+          const wK = parseWeather(dataK.current_weather.weathercode);
+          const wF = parseWeather(dataF.current_weather.weathercode);
+
+          weatherData.value = [
+            { city: '熊本', temp: Math.round(dataK.current_weather.temperature), condition: wK.text, icon: wK.icon, color: wK.color, bg: wK.bg },
+            { city: '福岡', temp: Math.round(dataF.current_weather.temperature), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg }
+          ];
+        } catch (err) {
+          console.error("天氣抓取失敗", err);
+          weatherData.value = [
+            { city: '熊本', temp: '22', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' },
+            { city: '福岡', temp: '21', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' }
+          ];
+        }
+      };
 
       const initialPackingList = [
         { id: 1, text: '護照 (確認效期六個月以上)', checked: false },
@@ -941,10 +983,11 @@
 
       onMounted(() => {
         initSortable();
+        fetchWeather();
       });
 
       return {
-        currentTab, tabs, days, selectedDayIdx, weather, exchangeRate, fxJpy, calculatedTwd, mustEatList,
+        currentTab, tabs, days, selectedDayIdx, weatherData, exchangeRate, fxJpy, calculatedTwd, mustEatList,
         currentDayItems, showItineraryModal, isEditing, formItem, openAddModal, openEditModal,
         saveItinerary, confirmDeleteItinerary, showShoppingModal, shoppingList, newShopping,
         handleFileUpload, addShoppingItem, deleteShoppingItem, showExpenseModal, expenses,
