@@ -38,7 +38,6 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    /* 自訂打勾方塊的顏色 */
     .checkbox-kuma { accent-color: #E60012; }
   </style>
 </head>
@@ -115,7 +114,6 @@
           <div v-if="index > 0" class="flex items-center justify-center space-x-2 my-2 text-xs text-gray-500 font-medium">
             <div class="h-px bg-gray-300 flex-1"></div>
             <div class="bg-white/90 px-3 py-1 rounded-full shadow-xs border border-gray-200 flex items-center space-x-1.5">
-              <!-- 使用上一站的交通方式與時間 -->
               <i :class="getTransportIcon(currentDayItems[index-1].transportType)" class="text-gray-600"></i>
               <span>約 {{ currentDayItems[index-1].travelTime || '15' }} 分鐘</span>
             </div>
@@ -278,7 +276,6 @@
         </div>
       </div>
 
-      <!-- 飯店資訊區塊 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
         <h3 class="font-bold text-sm text-gray-800 flex items-center">
           <i class="fa-solid fa-hotel text-kuma-red mr-2"></i>住宿資訊
@@ -443,12 +440,11 @@
 
   <!-- ==================== 彈出視窗 ==================== -->
   
-  <!-- 行程 Modal (加入交通方式與時間編輯) -->
+  <!-- 行程 Modal -->
   <div v-if="showItineraryModal" @click.self="showItineraryModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">{{ isEditing ? '編輯行程' : '新增行程' }}</h3>
       
-      <!-- 天數與分類區塊 -->
       <div class="grid grid-cols-2 gap-2 mt-1">
         <div>
           <label class="text-xs text-gray-400">所屬天數</label>
@@ -474,7 +470,6 @@
         <input v-model="formItem.title" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="請輸入地點名稱">
       </div>
 
-      <!-- 自訂交通方式與車程時間 -->
       <div class="grid grid-cols-2 gap-2 mt-1">
         <div>
           <label class="text-xs text-gray-400">交通 (前往此站)</label>
@@ -758,6 +753,7 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時' }
       ];
 
+      // ==== 升級到 v3，強迫瀏覽器讀取您在這邊修改好的最新資料 ====
       const initialItinerary = [
         [
           { id: '1-1', category: 'flight', title: '高雄小港(KHH) ➔ 熊本(KMJ) IT766', location: '熊本機場', time: '08:45 起飛 / 11:50 抵達', note: '抵達後前往飯店 Check-in', transportType: 'car', travelTime: '35' },
@@ -808,17 +804,19 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v2', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v2', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v2', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v2', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v2', initialPackingList));
+      // ==== 強制讀取 v3，捨棄舊的手機暫存 ====
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v3', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v3', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v3', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v3', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v3', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v2', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v2', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v2', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v2', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v2', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v3', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v3', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v3', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v3', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v3', JSON.stringify(newVal)), { deep: true });
+      // ===========================================
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -857,7 +855,6 @@
 
       const showItineraryModal = ref(false);
       const isEditing = ref(false);
-      // 加入預估時間欄位預設值
       const formItem = ref({ id: '', dayIdx: 0, originalDayIdx: 0, category: 'spot', title: '', hours: '', ticket: '', note: '', transportType: 'car', travelTime: '15' });
 
       const showFoodModal = ref(false);
