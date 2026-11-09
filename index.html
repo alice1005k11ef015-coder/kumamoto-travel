@@ -38,6 +38,7 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* 自訂打勾方塊的顏色 */
     .checkbox-kuma { accent-color: #E60012; }
   </style>
 </head>
@@ -110,11 +111,13 @@
       <!-- 行程列表 -->
       <div id="itinerary-list" class="space-y-3 pt-1">
         <div v-for="(item, index) in currentDayItems" :key="item.id" :data-id="item.id" class="relative group">
+          
           <div v-if="index > 0" class="flex items-center justify-center space-x-2 my-2 text-xs text-gray-500 font-medium">
             <div class="h-px bg-gray-300 flex-1"></div>
             <div class="bg-white/90 px-3 py-1 rounded-full shadow-xs border border-gray-200 flex items-center space-x-1.5">
-              <i :class="getTransportIcon(item.transportType)" class="text-gray-600"></i>
-              <span>約 {{ item.travelTime || '15' }} 分鐘</span>
+              <!-- 使用上一站的交通方式與時間 -->
+              <i :class="getTransportIcon(currentDayItems[index-1].transportType)" class="text-gray-600"></i>
+              <span>約 {{ currentDayItems[index-1].travelTime || '15' }} 分鐘</span>
             </div>
             <div class="h-px bg-gray-300 flex-1"></div>
           </div>
@@ -275,15 +278,24 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-        <h3 class="font-bold text-sm text-gray-800 mb-2 flex items-center">
+      <!-- 飯店資訊區塊 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
+        <h3 class="font-bold text-sm text-gray-800 flex items-center">
           <i class="fa-solid fa-hotel text-kuma-red mr-2"></i>住宿資訊
         </h3>
+        
+        <div class="text-xs space-y-1.5 text-gray-600 border-b border-gray-100 pb-3">
+          <div class="font-bold text-gray-800 text-sm">Vamo House (熊本)</div>
+          <div><i class="fa-solid fa-location-dot w-4 text-gray-400"></i>862-0959 Kumamoto, Kumamoto, 白山１丁目６−５, Japan</div>
+          <button @click="openDirectMap('862-0959 Kumamoto, Kumamoto, 白山１丁目６−５, Japan')" class="mt-2 w-full py-1.5 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">
+            開啟住宿導航
+          </button>
+        </div>
+
         <div class="text-xs space-y-1.5 text-gray-600">
-          <div class="font-bold text-gray-800 text-sm">Vamo House</div>
-          <div><i class="fa-solid fa-phone w-4 text-gray-400"></i>+81 96-XXX-XXXX</div>
-          <div><i class="fa-solid fa-location-dot w-4 text-gray-400"></i>熊本縣市中心區域</div>
-          <button @click="openDirectMap('Vamo House 熊本')" class="mt-2 w-full py-1.5 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">
+          <div class="font-bold text-gray-800 text-sm">ELIF-Nakasu (福岡)</div>
+          <div><i class="fa-solid fa-location-dot w-4 text-gray-400"></i>福岡県福岡市博多区古門戸町5-1 アイビル ３階, 日本</div>
+          <button @click="openDirectMap('福岡県福岡市博多区古門戸町5-1')" class="mt-2 w-full py-1.5 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">
             開啟住宿導航
           </button>
         </div>
@@ -431,31 +443,53 @@
 
   <!-- ==================== 彈出視窗 ==================== -->
   
-  <!-- 行程 Modal -->
+  <!-- 行程 Modal (加入交通方式與時間編輯) -->
   <div v-if="showItineraryModal" @click.self="showItineraryModal = false" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">{{ isEditing ? '編輯行程' : '新增行程' }}</h3>
-      <div>
-        <label class="text-xs text-gray-400">所屬天數</label>
-        <select v-model.number="formItem.dayIdx" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
-          <option v-for="(day, idx) in days" :key="idx" :value="idx">第 {{ idx + 1 }} 天 ({{ day.date }})</option>
-        </select>
+      
+      <!-- 天數與分類區塊 -->
+      <div class="grid grid-cols-2 gap-2 mt-1">
+        <div>
+          <label class="text-xs text-gray-400">所屬天數</label>
+          <select v-model.number="formItem.dayIdx" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
+            <option v-for="(day, idx) in days" :key="idx" :value="idx">第 {{ idx + 1 }} 天 ({{ day.date }})</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">分類</label>
+          <select v-model="formItem.category" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
+            <option value="spot">景點</option>
+            <option value="hotel">住宿</option>
+            <option value="food">美食</option>
+            <option value="shopping">購物</option>
+            <option value="flight">航班</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="text-xs text-gray-400">分類</label>
-        <select v-model="formItem.category" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
-          <option value="spot">景點</option>
-          <option value="hotel">住宿</option>
-          <option value="food">美食</option>
-          <option value="shopping">購物</option>
-          <option value="flight">航班</option>
-          <option value="other">其他</option>
-        </select>
-      </div>
+      
       <div>
         <label class="text-xs text-gray-400">名稱</label>
         <input v-model="formItem.title" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="請輸入地點名稱">
       </div>
+
+      <!-- 自訂交通方式與車程時間 -->
+      <div class="grid grid-cols-2 gap-2 mt-1">
+        <div>
+          <label class="text-xs text-gray-400">交通 (前往此站)</label>
+          <select v-model="formItem.transportType" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1">
+            <option value="car">🚗 開車/乘車</option>
+            <option value="bus">🚌 公車/客運</option>
+            <option value="walk">🚶 步行</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">預估時間 (分鐘)</label>
+          <input v-model="formItem.travelTime" type="number" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="15">
+        </div>
+      </div>
+
       <div v-if="['spot', 'hotel', 'food', 'shopping'].includes(formItem.category)">
         <label class="text-xs text-gray-400">營業時間</label>
         <input v-model="formItem.hours" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="09:00 - 18:00">
@@ -569,7 +603,7 @@
 
   createApp({
     setup() {
-      const currentTab = ref('itinerary');
+      const currentTab = ref('itinerary'); 
       const tabs = [
         { id: 'itinerary', name: '行程', icon: 'fa-solid fa-map-location-dot' },
         { id: 'food', name: '美食', icon: 'fa-solid fa-utensils' },
@@ -598,7 +632,6 @@
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
 
-      // ===== 即時天氣 API 邏輯 =====
       const weatherData = ref([
         { city: '熊本', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
         { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
@@ -606,10 +639,8 @@
 
       const fetchWeather = async () => {
         try {
-          // 熊本座標
           const resK = await fetch('https://api.open-meteo.com/v1/forecast?latitude=32.80&longitude=130.71&current_weather=true');
           const dataK = await resK.json();
-          // 福岡座標
           const resF = await fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current_weather=true');
           const dataF = await resF.json();
 
@@ -826,7 +857,8 @@
 
       const showItineraryModal = ref(false);
       const isEditing = ref(false);
-      const formItem = ref({ id: '', dayIdx: 0, originalDayIdx: 0, category: 'spot', title: '', hours: '', ticket: '', note: '' });
+      // 加入預估時間欄位預設值
+      const formItem = ref({ id: '', dayIdx: 0, originalDayIdx: 0, category: 'spot', title: '', hours: '', ticket: '', note: '', transportType: 'car', travelTime: '15' });
 
       const showFoodModal = ref(false);
       const isEditingFood = ref(false);
@@ -835,7 +867,7 @@
       const openAddModal = () => {
         if (currentTab.value === 'itinerary') {
           isEditing.value = false;
-          formItem.value = { id: Date.now().toString(), dayIdx: selectedDayIdx.value, category: 'spot', title: '', hours: '', ticket: '', note: '' };
+          formItem.value = { id: Date.now().toString(), dayIdx: selectedDayIdx.value, category: 'spot', title: '', hours: '', ticket: '', note: '', transportType: 'car', travelTime: '15' };
           showItineraryModal.value = true;
         } else if (currentTab.value === 'food') {
           isEditingFood.value = false;
@@ -867,7 +899,7 @@
             if (idx !== -1) itineraryData.value[formItem.value.dayIdx][idx] = { ...formItem.value };
           }
         } else {
-          itineraryData.value[formItem.value.dayIdx].push({ ...formItem.value, transportType: 'car', travelTime: '15' });
+          itineraryData.value[formItem.value.dayIdx].push({ ...formItem.value });
         }
         selectedDayIdx.value = formItem.value.dayIdx;
         showItineraryModal.value = false;
