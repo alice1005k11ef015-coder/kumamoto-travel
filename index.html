@@ -174,7 +174,7 @@
       </div>
     </div>
 
-    <!-- 2. 必吃美食 Tab (已套用上傳實拍照片) -->
+    <!-- 2. 必吃美食 Tab -->
     <div v-if="currentTab === 'food'" class="space-y-4">
       <div class="bg-gradient-to-r from-amber-500 to-orange-400 text-white rounded-2xl p-4 shadow-md text-center">
         <div class="text-base font-black tracking-wider"><i class="fa-solid fa-utensils mr-2"></i>必吃美食推薦</div>
@@ -183,8 +183,8 @@
       <div v-for="food in mustEatList" :key="food.id" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 overflow-hidden">
         
         <!-- 美食照片展示區 -->
-        <div class="w-full h-40 bg-gray-100 relative rounded-xl overflow-hidden mb-3">
-          <img v-if="food.image" :src="food.image" class="w-full h-full object-cover" @error="food.image=''">
+        <div class="w-full h-44 bg-gray-100 relative rounded-xl overflow-hidden mb-3">
+          <img v-if="food.image" :src="getImageUrl(food.image)" class="w-full h-full object-cover">
           <div v-else class="w-full h-full flex flex-col items-center justify-center bg-amber-50 text-amber-500">
             <i class="fa-solid fa-utensils text-3xl mb-1"></i>
             <span class="text-[10px] font-bold text-amber-400 tracking-wider">KUMAMOTO FOOD</span>
@@ -323,15 +323,15 @@
       </div>
     </div>
 
-    <!-- 6. 購物清單 Tab (加入天草鮮蝦煎餅、芥末蓮藕片、茅乃舍高湯包、栗千里) -->
+    <!-- 6. 購物清單 Tab -->
     <div v-if="currentTab === 'shopping'" class="space-y-4">
       <div class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-2xl p-4 shadow-md text-center"><div class="text-base font-black tracking-wider"><i class="fa-solid fa-basket-shopping mr-2"></i>必買伴手禮清單</div></div>
       <div class="grid grid-cols-2 gap-3">
         <div v-for="item in shoppingList" :key="item.id" class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between">
           <div>
             <div class="w-full h-28 bg-gray-50 rounded-xl mb-2 overflow-hidden flex items-center justify-center relative border border-gray-100">
-              <img v-if="item.image" :src="item.image" class="w-full h-full object-cover" @error="item.image=''">
-              <i v-if="!item.image" :class="[item.icon || 'fa-solid fa-basket-shopping', item.color || 'text-gray-300']" class="text-4xl drop-shadow-sm"></i>
+              <img v-if="item.image" :src="getImageUrl(item.image)" class="w-full h-full object-cover">
+              <i v-else :class="[item.icon || 'fa-solid fa-basket-shopping', item.color || 'text-gray-300']" class="text-4xl drop-shadow-sm"></i>
             </div>
             <div class="font-bold text-xs text-gray-800 line-clamp-2 leading-snug">{{ item.name }}</div>
             <div v-if="item.where" class="text-[10px] text-gray-500 mt-1.5 leading-relaxed"><span class="text-purple-600 font-bold block mb-0.5"><i class="fa-solid fa-store mr-1"></i>哪裡買：</span>{{ item.where }}</div>
@@ -436,7 +436,7 @@
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
       <h3 class="font-bold text-base text-gray-800">{{ isEditingFood ? '編輯必吃美食' : '新增必吃美食' }}</h3>
       <div><label class="text-xs text-gray-400">美食 / 餐廳名稱</label><input v-model="formFood.name" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1"></div>
-      <div><label class="text-xs text-gray-400">照片檔名或網址 (如 勝烈亭豬排.jpg)</label><input v-model="formFood.image" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="可留空使用預設圖示"></div>
+      <div><label class="text-xs text-gray-400">照片檔名或網址 (如 勝烈亭豬排.jpg)</label><input v-model="formFood.image" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="例如：黑亭拉麵.jpg"></div>
       <div><label class="text-xs text-gray-400">官方網站 / 介紹連結</label><input v-model="formFood.website" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1" placeholder="https://..."></div>
       <div><label class="text-xs text-gray-400">地址</label><input v-model="formFood.address" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1"></div>
       <div><label class="text-xs text-gray-400">交通 / 備註資訊</label><input v-model="formFood.transport" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1"></div>
@@ -456,7 +456,7 @@
       <h3 class="font-bold text-base text-gray-800">新增想買物品</h3>
       <div><label class="text-xs text-gray-400">商品名稱</label><input v-model="newShopping.name" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1"></div>
       <div><label class="text-xs text-gray-400">哪裡買</label><input v-model="newShopping.where" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1"></div>
-      <div><label class="text-xs text-gray-400">照片上傳</label><input type="file" @change="handleFileUpload" accept="image/*" class="w-full text-xs mt-1"></div>
+      <div><label class="text-xs text-gray-400">照片檔名或上傳</label><input v-model="newShopping.image" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm mt-1 mb-1" placeholder="例如：天草鮮蝦煎餅.jpg"><input type="file" @change="handleFileUpload" accept="image/*" class="w-full text-xs"></div>
       <div class="flex space-x-2 pt-2">
         <button @click="showShoppingModal = false" class="flex-1 py-2 bg-gray-100 text-gray-600 rounded-xl text-xs font-bold">取消</button>
         <button @click="addShoppingItem" class="flex-1 py-2 bg-kuma-black text-white rounded-xl text-xs font-bold">新增</button>
@@ -486,7 +486,7 @@
 
   createApp({
     setup() {
-      const currentTab = ref('itinerary'); 
+      const currentTab = ref('food'); // 預設直接開啟美食分頁，方便您第一時間檢查圖片
       const tabs = [
         { id: 'itinerary', name: '行程', icon: 'fa-solid fa-map-location-dot' },
         { id: 'food', name: '美食', icon: 'fa-solid fa-utensils' },
@@ -514,6 +514,13 @@
       const today = new Date();
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
+
+      // 安全載入本地/網址圖片 helper，自動對中文檔名與空格編碼
+      const getImageUrl = (imgName) => {
+        if (!imgName) return '';
+        if (imgName.startsWith('http') || imgName.startsWith('data:')) return imgName;
+        return encodeURI(imgName);
+      };
 
       const weatherData = ref([
         { city: '熊本', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
@@ -545,7 +552,6 @@
             { city: '福岡', temp: Math.round(dataF.current_weather.temperature), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg }
           ];
         } catch (err) {
-          console.error("天氣抓取失敗", err);
           weatherData.value = [
             { city: '熊本', temp: '22', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' },
             { city: '福岡', temp: '21', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' }
@@ -628,9 +634,9 @@
         }
       };
 
-      // 必吃美食初始資料 (已補上傳照片檔名)
+      // 美食資料庫：已綁定您上傳的每張對應圖檔
       const initialMustEatList = [
-        { id: 1, name: '黑亭拉麵 (熊本車站本店)', address: '熊本市西区二本木2丁目1-23', transport: '熊本車站步行8分鐘', hours: '10:30〜21:00', off: '無定休', image: '', website: 'https://kokutei.co.jp/' },
+        { id: 1, name: '黑亭拉麵 (熊本車站本店)', address: '熊本市西区二本木2丁目1-23', transport: '熊本車站步行8分鐘', hours: '10:30〜21:00', off: '無定休', image: '黑亭拉麵.jpg', website: 'https://kokutei.co.jp/' },
         { id: 2, name: '勝烈亭豬排 (熊本車站店)', address: '熊本市西区春日3-15−26', transport: '熊本車站步行1分鐘', hours: '11:00~22:00', off: '無定休', image: '勝烈亭豬排.jpg', website: 'https://hayashi-sangyo.jp/' },
         { id: 3, name: '勝烈亭豬排 (新市街店)', address: '熊本市中央区新市街8-18', transport: '市電辛島町站步行2分鐘', hours: '11:30~21:30', off: '無定休', image: '勝烈亭豬排.jpg', website: 'https://hayashi-sangyo.jp/' },
         { id: 4, name: '但馬屋 (櫻町購物中心店)', address: '熊本市中央区桜町3-10 (櫻町購物中心3樓)', transport: '櫻町購物中心內', hours: '依百貨營業時間', off: '依百貨公告', image: '但馬屋.jpg', website: 'https://www.56foods.co.jp/tajimaya' },
@@ -638,7 +644,7 @@
         { id: 6, name: 'Once Upon an Egg 雞蛋專門店', address: '熊本縣山鹿市久原3685', transport: '百年劇場/山鹿溫泉周邊', hours: '09:00~18:00', off: '每週五休 (遇假日除外)', image: 'Once Upon an Egg 雞蛋專門店.jpg', website: 'https://onceuponanegg.jp/' },
         { id: 7, name: '阿蘇牛奶 & 阿蘇牛奶起司布丁', address: '阿蘇地區 / 草千里 / 道之驛', transport: '阿蘇各大特產部', hours: '依店家公告', off: '無', image: '阿蘇牛奶.jpg', website: 'https://www.aso-denku.jp/' },
         { id: 8, name: '阿蘇とり宮 (馬肉可樂餅)', address: '阿蘇市一の宮町宮地3092-2', transport: '阿蘇神社門前町', hours: '09:00~19:00', off: '無', image: '阿蘇とり宮.jpg', website: 'https://torimiya.com/' },
-        { id: 9, name: '阿蘇草千里咖啡廳 (草千里珈琲焙煎所)', address: '阿蘇市永草2391-15', transport: '草千里景觀區內', hours: '10:00~17:00', off: '無', image: '', website: 'https://www.kusasenricoffeeroastery.com/' },
+        { id: 9, name: '阿蘇草千里咖啡廳 (草千里珈琲焙煎所)', address: '阿蘇市永草2391-15', transport: '草千里景觀區內', hours: '10:00~17:00', off: '無', image: '阿蘇草千里咖啡廳.jpg', website: 'https://www.kusasenricoffeeroastery.com/' },
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時', image: '', website: 'https://tora-corp.com/sushitora/' }
       ];
 
@@ -685,7 +691,7 @@
         ]
       ];
 
-      // 伴手禮清單 (加入天草鮮蝦煎餅、芥末蓮藕片、茅乃舍高湯包、栗千里)
+      // 伴手禮清單
       const initialShopping = [
         { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
         { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
@@ -708,18 +714,18 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      // 升級至 v7 鍵值，全面啟用新圖檔配置
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v7', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v7', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v7', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v7', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v7', initialPackingList));
+      // 升級至 v9 鍵值，強制清空舊快取並重新載入圖片與資料
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v9', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v9', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v9', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v9', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v9', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v7', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v7', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v7', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v7', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v7', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v9', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v9', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v9', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v9', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v9', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -925,7 +931,7 @@
         newExpense, totalExpense, addExpense, deleteExpense, getCategoryLabel, getCategoryBadgeClass,
         getTransportIcon, openGoogleMap, openDirectMap, 
         showFoodModal, isEditingFood, formFood, openEditFoodModal, saveFood, confirmDeleteFood,
-        japanesePhrases, speakJapanese, daysLeft, packingList
+        japanesePhrases, speakJapanese, daysLeft, packingList, getImageUrl
       };
     }
   }).mount('#app');
