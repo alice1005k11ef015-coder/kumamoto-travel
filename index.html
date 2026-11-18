@@ -184,7 +184,7 @@
         
         <!-- 美食照片展示區 -->
         <div class="w-full h-44 bg-gray-100 relative rounded-xl overflow-hidden mb-3">
-          <img v-if="food.image" :src="getImageUrl(food.image)" class="w-full h-full object-cover">
+          <img v-if="food.image" :src="food.image" class="w-full h-full object-cover" @error="food.image=''">
           <div v-else class="w-full h-full flex flex-col items-center justify-center bg-amber-50 text-amber-500">
             <i class="fa-solid fa-utensils text-3xl mb-1"></i>
             <span class="text-[10px] font-bold text-amber-400 tracking-wider">KUMAMOTO FOOD</span>
@@ -273,9 +273,11 @@
       </div>
     </div>
 
-    <!-- 4. 注意事項 Tab -->
+    <!-- 4. 注意事項 Tab (新增熊本機場退稅注意事項) -->
     <div v-if="currentTab === 'notes'" class="space-y-4">
       <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center"><div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div></div>
+      
+      <!-- 出發前行李檢查清單 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center"><i class="fa-solid fa-suitcase-rolling text-kuma-red mr-2"></i>出發前行李檢查清單</h3>
         <div class="space-y-1.5">
@@ -285,10 +287,32 @@
           </label>
         </div>
       </div>
+
+      <!-- 熊本機場退稅注意事項 (2026/11/1 新制) -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
+          <i class="fa-solid fa-receipt text-kuma-red mr-2"></i>熊本機場退稅注意事項 (新制)
+        </h3>
+        <div class="text-[11px] text-red-600 font-bold bg-red-50 p-2.5 rounded-lg border border-red-100 mb-3 leading-relaxed">
+          ⚠️ 關鍵順序：抵達機場後，務必「先完成海關退稅機台掃描，再辦理行李託運」！若已託運無法出示商品將無法退稅。
+        </div>
+        <div class="text-xs text-gray-600 font-bold mb-2">退稅與出境流程重點：</div>
+        <ul class="text-xs text-gray-600 space-y-2 list-disc list-inside marker:text-kuma-red pl-1 leading-relaxed">
+          <li><span class="font-bold text-gray-800">先付後退制：</span>市區免稅店結帳先付含稅價，保留收據並依指示掃 QR Code 登記退款方式。</li>
+          <li><span class="font-bold text-gray-800">機台位置：</span>熊本機場 1 樓國際線報到大廳（警察局旁）設有海關自助退稅機台 (Kiosk)。</li>
+          <li><span class="font-bold text-gray-800">掃描判定：</span>託運前攜帶<span class="text-gray-800 font-bold">護照＋所有免稅商品</span>至機台掃描。顯示<span class="text-emerald-600 font-bold">綠燈</span>可直接去託運；顯示<span class="text-kuma-red font-bold">紅燈</span>需至海關櫃檯查驗商品。</li>
+          <li><span class="font-bold text-gray-800">無現金退稅：</span>熊本機場<span class="text-kuma-red font-bold">未設置現金退稅機台</span>，僅能透過信用卡、電子支付或銀行帳戶線上退款。</li>
+          <li><span class="font-bold text-gray-800">不可提前消耗：</span>同張收據若有任一商品在日本境內吃掉或用掉，整張收據將無法退稅。</li>
+        </ul>
+      </div>
+
+      <!-- 租車櫃檯位置 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-2 flex items-center"><i class="fa-solid fa-car text-kuma-red mr-2"></i>租車櫃檯位置</h3>
         <div class="text-xs text-gray-600 space-y-1.5"><p>位於抵達大廳 1 樓的歡迎廣場正前方。</p><p><span class="font-bold text-gray-800">櫃檯服務時間：</span>09:00 至 18:00</p></div>
       </div>
+
+      <!-- 機場國內線商店街通關指南 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center"><i class="fa-solid fa-plane-circle-check text-kuma-red mr-2"></i>機場國內線商店街通關指南</h3>
         <div class="text-[11px] text-red-600 font-bold bg-red-50 p-2.5 rounded-lg border border-red-100 mb-3 leading-relaxed">持有國際機票的旅客，不能直接過去國內線商店街，要先過國際線安檢，才會有通道讓你過去國內線商店街。</div>
@@ -330,7 +354,7 @@
         <div v-for="item in shoppingList" :key="item.id" class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between">
           <div>
             <div class="w-full h-28 bg-gray-50 rounded-xl mb-2 overflow-hidden flex items-center justify-center relative border border-gray-100">
-              <img v-if="item.image" :src="getImageUrl(item.image)" class="w-full h-full object-cover">
+              <img v-if="item.image" :src="item.image" class="w-full h-full object-cover" @error="item.image=''">
               <i v-else :class="[item.icon || 'fa-solid fa-basket-shopping', item.color || 'text-gray-300']" class="text-4xl drop-shadow-sm"></i>
             </div>
             <div class="font-bold text-xs text-gray-800 line-clamp-2 leading-snug">{{ item.name }}</div>
@@ -515,22 +539,24 @@
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
 
-      const getImageUrl = (imgName) => {
-        if (!imgName) return '';
-        if (imgName.startsWith('http') || imgName.startsWith('data:')) return imgName;
-        return encodeURI(imgName);
-      };
-
       const weatherData = ref([
         { city: '熊本', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
         { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
       ]);
 
+      // 修復天氣 API 抓取與逾時保護機制
       const fetchWeather = async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒逾時自動切換備用溫度
+
         try {
-          const resK = await fetch('https://api.open-meteo.com/v1/forecast?latitude=32.80&longitude=130.71&current_weather=true');
+          const [resK, resF] = await Promise.all([
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=32.80&longitude=130.71&current=temperature_2m,weather_code', { signal: controller.signal }),
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current=temperature_2m,weather_code', { signal: controller.signal })
+          ]);
+          clearTimeout(timeoutId);
+
           const dataK = await resK.json();
-          const resF = await fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current_weather=true');
           const dataF = await resF.json();
 
           const parseWeather = (code) => {
@@ -543,17 +569,18 @@
             return { text: '雷雨', icon: 'fa-solid fa-bolt', color: 'text-purple-500', bg: 'bg-purple-100' };
           };
 
-          const wK = parseWeather(dataK.current_weather.weathercode);
-          const wF = parseWeather(dataF.current_weather.weathercode);
+          const wK = parseWeather(dataK.current.weather_code);
+          const wF = parseWeather(dataF.current.weather_code);
 
           weatherData.value = [
-            { city: '熊本', temp: Math.round(dataK.current_weather.temperature), condition: wK.text, icon: wK.icon, color: wK.color, bg: wK.bg },
-            { city: '福岡', temp: Math.round(dataF.current_weather.temperature), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg }
+            { city: '熊本', temp: Math.round(dataK.current.temperature_2m), condition: wK.text, icon: wK.icon, color: wK.color, bg: wK.bg },
+            { city: '福岡', temp: Math.round(dataF.current.temperature_2m), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg }
           ];
         } catch (err) {
+          clearTimeout(timeoutId);
           weatherData.value = [
-            { city: '熊本', temp: '22', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' },
-            { city: '福岡', temp: '21', condition: '多雲', icon: 'fa-solid fa-cloud', color: 'text-gray-500', bg: 'bg-gray-200' }
+            { city: '熊本', temp: '19', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' },
+            { city: '福岡', temp: '18', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' }
           ];
         }
       };
@@ -646,7 +673,6 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時', image: '', website: 'https://tora-corp.com/sushitora/' }
       ];
 
-      // 完整 5 天行程 (已更新 DAY 2 為完整阿蘇行程)
       const initialItinerary = [
         // DAY 1 (4/23)
         [
@@ -656,7 +682,7 @@
           { id: '1-4', category: 'shopping', title: '櫻町購物中心', hours: '10:00 - 20:00', note: '複合式大型購物中心，逛街購物', transportType: 'walk', travelTime: '5' },
           { id: '1-5', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本在地美食', transportType: 'walk', travelTime: '0' }
         ],
-        // DAY 2 (4/24 - 最新阿蘇行程)
+        // DAY 2 (4/24)
         [
           { id: '2-1', category: 'spot', title: '道之驛阿蘇', hours: '09:00 - 18:00', note: '品嚐阿蘇牛奶、布丁與購買在地特產', transportType: 'car', travelTime: '10' },
           { id: '2-2', category: 'spot', title: '阿蘇神社＋門前町', hours: '09:00 - 17:00', note: '參拜歷史名社，順遊門前町吃馬肉可樂餅', transportType: 'walk', travelTime: '3' },
@@ -692,7 +718,7 @@
         ]
       ];
 
-      // 伴手禮清單
+      // 伴手禮清單 (修復芥末蓮藕片照片路徑)
       const initialShopping = [
         { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
         { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
@@ -715,18 +741,18 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      // 升級至 v13 鍵值，強制清空舊快取並載入最新修改後的行程
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v13', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v13', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v13', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v13', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v13', initialPackingList));
+      // 升級至 v14 鍵值，強制清空舊快取
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v14', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v14', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v14', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v14', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v14', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v13', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v13', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v13', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v13', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v13', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v14', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v14', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v14', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v14', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v14', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -932,7 +958,7 @@
         newExpense, totalExpense, addExpense, deleteExpense, getCategoryLabel, getCategoryBadgeClass,
         getTransportIcon, openGoogleMap, openDirectMap, 
         showFoodModal, isEditingFood, formFood, openEditFoodModal, saveFood, confirmDeleteFood,
-        japanesePhrases, speakJapanese, daysLeft, packingList, getImageUrl
+        japanesePhrases, speakJapanese, daysLeft, packingList
       };
     }
   }).mount('#app');
