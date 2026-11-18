@@ -486,7 +486,7 @@
 
   createApp({
     setup() {
-      const currentTab = ref('food'); // 預設直接開啟美食分頁，方便您第一時間檢查圖片
+      const currentTab = ref('itinerary');
       const tabs = [
         { id: 'itinerary', name: '行程', icon: 'fa-solid fa-map-location-dot' },
         { id: 'food', name: '美食', icon: 'fa-solid fa-utensils' },
@@ -515,7 +515,6 @@
       const diffTime = targetDate - today;
       const daysLeft = ref(diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0);
 
-      // 安全載入本地/網址圖片 helper，自動對中文檔名與空格編碼
       const getImageUrl = (imgName) => {
         if (!imgName) return '';
         if (imgName.startsWith('http') || imgName.startsWith('data:')) return imgName;
@@ -634,7 +633,6 @@
         }
       };
 
-      // 美食資料庫：已綁定您上傳的每張對應圖檔
       const initialMustEatList = [
         { id: 1, name: '黑亭拉麵 (熊本車站本店)', address: '熊本市西区二本木2丁目1-23', transport: '熊本車站步行8分鐘', hours: '10:30〜21:00', off: '無定休', image: '黑亭拉麵.jpg', website: 'https://kokutei.co.jp/' },
         { id: 2, name: '勝烈亭豬排 (熊本車站店)', address: '熊本市西区春日3-15−26', transport: '熊本車站步行1分鐘', hours: '11:00~22:00', off: '無定休', image: '勝烈亭豬排.jpg', website: 'https://hayashi-sangyo.jp/' },
@@ -648,9 +646,9 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時', image: '', website: 'https://tora-corp.com/sushitora/' }
       ];
 
-      // 完整 5 天行程
+      // 完整 5 天行程 (已對調 DAY2 與 DAY4，並將動植物園更換為加藤神社)
       const initialItinerary = [
-        // DAY 1
+        // DAY 1 (4/23)
         [
           { id: '1-1', category: 'flight', title: '高雄小港(KHH) ➔ 熊本(KMJ) IT766', location: '熊本機場', time: '08:45 起飛 / 11:50 抵達', note: '抵達後取車前往市區', transportType: 'car', travelTime: '40' },
           { id: '1-2', category: 'food', title: '支那そば北熊 総本店', hours: '11:00 - 15:00, 18:00 - 22:00', note: '熊本在地人氣拉麵', transportType: 'car', travelTime: '25' },
@@ -658,13 +656,13 @@
           { id: '1-4', category: 'shopping', title: '櫻町購物中心', hours: '10:00 - 20:00', note: '複合式大型購物中心，逛街購物', transportType: 'walk', travelTime: '5' },
           { id: '1-5', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本在地美食', transportType: 'walk', travelTime: '0' }
         ],
-        // DAY 2
+        // DAY 2 (4/24 - 原 DAY4 行程)
         [
-          { id: '2-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'car', travelTime: '15' },
-          { id: '2-2', category: 'spot', title: '水前寺成趣園', hours: '08:30 - 17:00', ticket: '400日圓', note: '桃山式回遊庭園，景色優美', transportType: 'car', travelTime: '10' },
-          { id: '2-3', category: 'spot', title: '熊本市動植物園', hours: '09:00 - 17:00', ticket: '成人 500日圓', note: '親子同樂，觀賞可愛動物', transportType: 'car', travelTime: '15' }
+          { id: '2-1', category: 'spot', title: '麵包超人兒童博物館', hours: '10:00 - 17:00', ticket: '1800日圓', note: '適合親子同樂', transportType: 'car', travelTime: '20' },
+          { id: '2-2', category: 'spot', title: '福岡 LaLaport (巨大鋼彈)', hours: '10:00 - 21:00', note: '必拍實體大鋼彈立像，百貨商場購物', transportType: 'car', travelTime: '80' },
+          { id: '2-3', category: 'other', title: '返回熊本', hours: '-', note: '滿載而歸，開車返回熊本市區', transportType: 'car', travelTime: '15' }
         ],
-        // DAY 3
+        // DAY 3 (4/25)
         [
           { id: '3-0', category: 'other', title: '熊本出發前往由布院', hours: '-', note: '開車路程較長，建議提早出發', transportType: 'car', travelTime: '120' },
           { id: '3-1', category: 'spot', title: '由布院 金鱗湖', hours: '全天開放', note: '清晨或午後漫步湖畔，風景如畫', transportType: 'walk', travelTime: '5' },
@@ -675,13 +673,13 @@
           { id: '3-6', category: 'shopping', title: '博多運河城 (Canal City)', hours: '10:00 - 21:00', note: '超大型購物娛樂中心，有水舞秀', transportType: 'walk', travelTime: '10' },
           { id: '3-7', category: 'food', title: '中洲屋台 (晚餐/宵夜)', hours: '傍晚 - 深夜', note: '體驗福岡在地獨特的屋台路邊攤文化', transportType: 'walk', travelTime: '5' }
         ],
-        // DAY 4
+        // DAY 4 (4/26 - 原 DAY2 行程，動植物園已改為加藤神社)
         [
-          { id: '4-1', category: 'spot', title: '麵包超人兒童博物館', hours: '10:00 - 17:00', ticket: '1800日圓', note: '適合親子同樂', transportType: 'car', travelTime: '20' },
-          { id: '4-2', category: 'spot', title: '福岡 LaLaport (巨大鋼彈)', hours: '10:00 - 21:00', note: '必拍實體大鋼彈立像，百貨商場購物', transportType: 'car', travelTime: '80' },
-          { id: '4-3', category: 'other', title: '返回熊本', hours: '-', note: '滿載而歸，開車返回熊本市區', transportType: 'car', travelTime: '15' }
+          { id: '4-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'walk', travelTime: '5' },
+          { id: '4-2', category: 'spot', title: '加藤神社', hours: '全天開放', ticket: '免費', note: '緊鄰熊本城旁，是拍攝天守閣的最佳角度', transportType: 'car', travelTime: '15' },
+          { id: '4-3', category: 'spot', title: '水前寺成趣園', hours: '08:30 - 17:00', ticket: '400日圓', note: '桃山式回遊庭園，景色優美', transportType: 'car', travelTime: '15' }
         ],
-        // DAY 5
+        // DAY 5 (4/27)
         [
           { id: '5-1', category: 'spot', title: '阿蘇道の駅 (休息站)', hours: '09:00 - 18:00', note: '品嚐阿蘇牛奶與在地特產', transportType: 'car', travelTime: '10' },
           { id: '5-2', category: 'spot', title: '阿蘇神社', hours: '09:00 - 17:00', note: '歷史悠久，順遊門前町吃馬肉可樂餅', transportType: 'car', travelTime: '30' },
@@ -714,18 +712,18 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      // 升級至 v9 鍵值，強制清空舊快取並重新載入圖片與資料
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v9', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v9', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v9', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v9', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v9', initialPackingList));
+      // 升級至 v10 鍵值，強制清空舊快取並載入最新修改後的行程
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v10', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v10', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v10', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v10', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v10', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v9', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v9', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v9', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v9', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v9', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v10', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v10', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v10', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v10', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v10', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
@@ -740,201 +738,4 @@
             delay: 100,
             delayOnTouchOnly: true,
             onUpdate: (evt) => {
-              const itemEl = evt.item;
-              if (evt.oldIndex < evt.newIndex) {
-                  evt.from.insertBefore(itemEl, evt.from.children[evt.oldIndex]);
-              } else {
-                  evt.from.insertBefore(itemEl, evt.from.children[evt.oldIndex + 1]);
-              }
-              const items = [...itineraryData.value[selectedDayIdx.value]];
-              const movedItem = items.splice(evt.oldIndex, 1)[0];
-              items.splice(evt.newIndex, 0, movedItem);
-              itineraryData.value[selectedDayIdx.value] = items;
-            }
-          });
-        }
-      };
-
-      watch([selectedDayIdx, currentTab], async () => {
-        if (currentTab.value === 'itinerary') {
-          await nextTick();
-          initSortable();
-        }
-      });
-
-      const showItineraryModal = ref(false);
-      const isEditing = ref(false);
-      const formItem = ref({ id: '', dayIdx: 0, originalDayIdx: 0, category: 'spot', title: '', hours: '', ticket: '', note: '', transportType: 'car', travelTime: '15' });
-
-      const showFoodModal = ref(false);
-      const isEditingFood = ref(false);
-      const formFood = ref({ id: '', name: '', address: '', transport: '', hours: '', off: '', image: '', website: '' });
-
-      const openAddModal = () => {
-        if (currentTab.value === 'itinerary') {
-          isEditing.value = false;
-          formItem.value = { id: Date.now().toString(), dayIdx: selectedDayIdx.value, category: 'spot', title: '', hours: '', ticket: '', note: '', transportType: 'car', travelTime: '15' };
-          showItineraryModal.value = true;
-        } else if (currentTab.value === 'food') {
-          isEditingFood.value = false;
-          formFood.value = { id: Date.now().toString(), name: '', address: '', transport: '', hours: '', off: '', image: '', website: '' };
-          showFoodModal.value = true;
-        } else if (currentTab.value === 'shopping') {
-          showShoppingModal.value = true;
-        } else if (currentTab.value === 'expense') {
-          showExpenseModal.value = true;
-        }
-      };
-
-      const openEditModal = (item) => {
-        isEditing.value = true;
-        formItem.value = { ...item, dayIdx: selectedDayIdx.value, originalDayIdx: selectedDayIdx.value };
-        showItineraryModal.value = true;
-      };
-
-      const saveItinerary = () => {
-        if (!formItem.value.title) {
-          alert('請輸入地點名稱！'); return;
-        }
-        if (isEditing.value) {
-          if (formItem.value.dayIdx !== formItem.value.originalDayIdx) {
-            itineraryData.value[formItem.value.originalDayIdx] = itineraryData.value[formItem.value.originalDayIdx].filter(i => i.id !== formItem.value.id);
-            itineraryData.value[formItem.value.dayIdx].push({ ...formItem.value });
-          } else {
-            const idx = itineraryData.value[formItem.value.dayIdx].findIndex(i => i.id === formItem.value.id);
-            if (idx !== -1) itineraryData.value[formItem.value.dayIdx][idx] = { ...formItem.value };
-          }
-        } else {
-          itineraryData.value[formItem.value.dayIdx].push({ ...formItem.value });
-        }
-        selectedDayIdx.value = formItem.value.dayIdx;
-        showItineraryModal.value = false;
-      };
-
-      const confirmDeleteItinerary = () => {
-        if (confirm('確定要刪除此行程嗎？')) {
-          itineraryData.value[selectedDayIdx.value] = itineraryData.value[selectedDayIdx.value].filter(i => i.id !== formItem.value.id);
-          showItineraryModal.value = false;
-        }
-      };
-
-      const openEditFoodModal = (food) => {
-        isEditingFood.value = true;
-        formFood.value = { ...food };
-        showFoodModal.value = true;
-      };
-
-      const saveFood = () => {
-        if (!formFood.value.name) {
-          alert('請輸入美食/餐廳名稱！'); return;
-        }
-        if (isEditingFood.value) {
-          const idx = mustEatList.value.findIndex(f => f.id === formFood.value.id);
-          if (idx !== -1) mustEatList.value[idx] = { ...formFood.value };
-        } else {
-          mustEatList.value.push({ ...formFood.value, id: Date.now() });
-        }
-        showFoodModal.value = false;
-      };
-
-      const confirmDeleteFood = () => {
-        if (confirm('確定要從必吃清單刪除此餐廳嗎？')) {
-          mustEatList.value = mustEatList.value.filter(f => f.id !== formFood.value.id);
-          showFoodModal.value = false;
-        }
-      };
-
-      const showShoppingModal = ref(false);
-      const newShopping = ref({ name: '', where: '', image: '' });
-
-      const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (evt) => { newShopping.value.image = evt.target.result; };
-          reader.readAsDataURL(file);
-        }
-      };
-
-      const addShoppingItem = () => {
-        if (!newShopping.value.name) {
-          alert('請至少輸入商品名稱！'); return;
-        }
-        shoppingList.value.push({ id: Date.now(), ...newShopping.value });
-        newShopping.value = { name: '', where: '', image: '' };
-        showShoppingModal.value = false;
-      };
-
-      const deleteShoppingItem = (id) => {
-        shoppingList.value = shoppingList.value.filter(i => i.id !== id);
-      };
-
-      const showExpenseModal = ref(false);
-      const newExpense = ref({ category: '飲食', name: '', amount: 0, payment: '現金', date: '2027/04/23' });
-
-      const totalExpense = computed(() => expenses.value.reduce((sum, item) => sum + (item.amount || 0), 0));
-
-      const addExpense = () => {
-        if (!newExpense.value.name || !newExpense.value.amount) {
-          alert('請輸入花費的「項目名稱」與「金額」！'); return;
-        }
-        expenses.value.push({ id: Date.now(), ...newExpense.value });
-        newExpense.value = { category: '飲食', name: '', amount: 0, payment: '現金', date: '2027/04/23' };
-        showExpenseModal.value = false;
-      };
-
-      const deleteExpense = (id) => {
-        expenses.value = expenses.value.filter(e => e.id !== id);
-      };
-
-      const getCategoryLabel = (cat) => {
-        const map = { spot: '景點', hotel: '住宿', food: '美食', shopping: '購物', flight: '航班', other: '其他' };
-        return map[cat] || '其他';
-      };
-
-      const getCategoryBadgeClass = (cat) => {
-        const map = {
-          spot: 'bg-emerald-100 text-emerald-700',
-          hotel: 'bg-blue-100 text-blue-700',
-          food: 'bg-amber-100 text-amber-700',
-          shopping: 'bg-purple-100 text-purple-700',
-          flight: 'bg-gray-800 text-white',
-          other: 'bg-gray-100 text-gray-700'
-        };
-        return map[cat] || 'bg-gray-100 text-gray-700';
-      };
-
-      const getTransportIcon = (type) => {
-        if (type === 'walk') return 'fa-solid fa-person-walking';
-        return 'fa-solid fa-car';
-      };
-
-      const openGoogleMap = (item) => {
-        const query = encodeURIComponent(item.title);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
-      };
-
-      const openDirectMap = (queryStr) => {
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryStr)}`, '_blank');
-      };
-
-      onMounted(() => {
-        initSortable();
-        fetchWeather();
-      });
-
-      return {
-        currentTab, tabs, days, selectedDayIdx, weatherData, exchangeRate, fxJpy, calculatedTwd, mustEatList,
-        currentDayItems, showItineraryModal, isEditing, formItem, openAddModal, openEditModal,
-        saveItinerary, confirmDeleteItinerary, showShoppingModal, shoppingList, newShopping,
-        handleFileUpload, addShoppingItem, deleteShoppingItem, showExpenseModal, expenses,
-        newExpense, totalExpense, addExpense, deleteExpense, getCategoryLabel, getCategoryBadgeClass,
-        getTransportIcon, openGoogleMap, openDirectMap, 
-        showFoodModal, isEditingFood, formFood, openEditFoodModal, saveFood, confirmDeleteFood,
-        japanesePhrases, speakJapanese, daysLeft, packingList, getImageUrl
-      };
-    }
-  }).mount('#app');
-</script>
-</body>
-</html>
+              const itemEl =
