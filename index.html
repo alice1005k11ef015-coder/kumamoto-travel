@@ -81,8 +81,8 @@
     <!-- 1. 每日行程表 Tab -->
     <div v-if="currentTab === 'itinerary'" class="space-y-4">
       
-      <!-- 即時天氣卡片 -->
-      <div class="grid grid-cols-2 gap-3">
+      <!-- 即時天氣卡片 (熊本、福岡、阿蘇、由布院 2x2 網格) -->
+      <div class="grid grid-cols-2 gap-2.5">
         <div v-for="w in weatherData" :key="w.city" class="bg-white/80 backdrop-blur rounded-2xl p-3 shadow-sm border border-white/50 flex flex-col justify-between">
           <div class="flex justify-between items-start">
             <div class="text-xs text-gray-600 font-bold tracking-wider"><i class="fa-solid fa-location-dot text-kuma-red mr-1"></i>{{ w.city }}即時</div>
@@ -541,7 +541,9 @@
 
       const weatherData = ref([
         { city: '熊本', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
-        { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
+        { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
+        { city: '阿蘇', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' },
+        { city: '由布院', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
       ]);
 
       const fetchWeather = async () => {
@@ -549,14 +551,20 @@
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         try {
-          const [resK, resF] = await Promise.all([
+          const [resK, resF, resA, resY] = await Promise.all([
             fetch('https://api.open-meteo.com/v1/forecast?latitude=32.80&longitude=130.71&current=temperature_2m,weather_code', { signal: controller.signal }),
-            fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current=temperature_2m,weather_code', { signal: controller.signal })
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=33.59&longitude=130.40&current=temperature_2m,weather_code', { signal: controller.signal }),
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=32.95&longitude=131.12&current=temperature_2m,weather_code', { signal: controller.signal }),
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=33.27&longitude=131.39&current=temperature_2m,weather_code', { signal: controller.signal })
           ]);
           clearTimeout(timeoutId);
 
-          const dataK = await resK.json();
-          const dataF = await resF.json();
+          const [dataK, dataF, dataA, dataY] = await Promise.all([
+            resK.json(),
+            resF.json(),
+            resA.json(),
+            resY.json()
+          ]);
 
           const parseWeather = (code) => {
             if (code === 0) return { text: '晴天', icon: 'fa-solid fa-sun', color: 'text-amber-500', bg: 'bg-amber-100' };
@@ -570,16 +578,22 @@
 
           const wK = parseWeather(dataK.current.weather_code);
           const wF = parseWeather(dataF.current.weather_code);
+          const wA = parseWeather(dataA.current.weather_code);
+          const wY = parseWeather(dataY.current.weather_code);
 
           weatherData.value = [
             { city: '熊本', temp: Math.round(dataK.current.temperature_2m), condition: wK.text, icon: wK.icon, color: wK.color, bg: wK.bg },
-            { city: '福岡', temp: Math.round(dataF.current.temperature_2m), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg }
+            { city: '福岡', temp: Math.round(dataF.current.temperature_2m), condition: wF.text, icon: wF.icon, color: wF.color, bg: wF.bg },
+            { city: '阿蘇', temp: Math.round(dataA.current.temperature_2m), condition: wA.text, icon: wA.icon, color: wA.color, bg: wA.bg },
+            { city: '由布院', temp: Math.round(dataY.current.temperature_2m), condition: wY.text, icon: wY.icon, color: wY.color, bg: wY.bg }
           ];
         } catch (err) {
           clearTimeout(timeoutId);
           weatherData.value = [
             { city: '熊本', temp: '19', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' },
-            { city: '福岡', temp: '18', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' }
+            { city: '福岡', temp: '18', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' },
+            { city: '阿蘇', temp: '15', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' },
+            { city: '由布院', temp: '16', condition: '晴時多雲', icon: 'fa-solid fa-cloud-sun', color: 'text-amber-500', bg: 'bg-amber-100' }
           ];
         }
       };
@@ -672,6 +686,7 @@
         { id: 10, name: '寿司虎 熊本菊陽店', address: '熊本県菊池郡菊陽町津久礼2524-2', transport: '電話: 096-213-5858 (部分平台可預約)', hours: '平日 11:30~15:00 / 17:00~21:00', off: '最後入店為結束前1小時', image: '', website: 'https://tora-corp.com/sushitora/' }
       ];
 
+      // 完整 5 天行程 (已更新 DAY 5：移除水前寺成趣園，加入 ゆめタウンはません)
       const initialItinerary = [
         // DAY 1 (4/23)
         [
@@ -681,7 +696,7 @@
           { id: '1-4', category: 'shopping', title: '櫻町購物中心', hours: '10:00 - 20:00', note: '複合式大型購物中心，逛街購物', transportType: 'walk', travelTime: '5' },
           { id: '1-5', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本在地美食', transportType: 'walk', travelTime: '0' }
         ],
-        // DAY 2 (4/24 - 加入阿蘇卡德利動物園於第一站)
+        // DAY 2 (4/24)
         [
           { id: '2-0', category: 'spot', title: '阿蘇卡德利動物園', hours: '09:30 - 17:00', ticket: '成人 2,600日圓', note: '建議一開園先去，可看小熊、水豚與動物劇場表演', transportType: 'car', travelTime: '3' },
           { id: '2-1', category: 'spot', title: '道之驛阿蘇', hours: '09:00 - 18:00', note: '就在動物園旁，品嚐阿蘇牛奶、布丁與購買特產', transportType: 'car', travelTime: '10' },
@@ -708,11 +723,11 @@
           { id: '4-2', category: 'spot', title: '福岡 LaLaport (巨大鋼彈)', hours: '10:00 - 21:00', note: '必拍實體大鋼彈立像，百貨商場購物', transportType: 'car', travelTime: '80' },
           { id: '4-3', category: 'other', title: '返回熊本', hours: '-', note: '滿載而歸，開車返回熊本市區', transportType: 'car', travelTime: '0' }
         ],
-        // DAY 5 (4/27)
+        // DAY 5 (4/27 - 移除水前寺成趣園，加入 ゆめタウンはません)
         [
           { id: '5-1', category: 'spot', title: '熊本城、城彩苑', hours: '09:00 - 17:00', ticket: '高中生以上 800日圓', note: '日本三大名城之一，漫步城彩苑品嚐美食', transportType: 'walk', travelTime: '5' },
           { id: '5-2', category: 'spot', title: '加藤神社', hours: '全天開放', ticket: '免費', note: '緊鄰熊本城旁，是拍攝天守閣的最佳角度', transportType: 'car', travelTime: '15' },
-          { id: '5-3', category: 'spot', title: '水前寺成趣園', hours: '08:30 - 17:00', ticket: '400日圓', note: '桃山式回遊庭園，景色優美', transportType: 'car', travelTime: '35' },
+          { id: '5-3', category: 'shopping', title: 'ゆめタウンはません（Youme Town Hamasen）', hours: '10:00 - 21:00', note: '大型綜合購物中心，適合回國前最後採買、逛超市與吃午餐', transportType: 'car', travelTime: '40' },
           { id: '5-4', category: 'other', title: '抵達熊本機場 (準備報到)', hours: '17:00', note: '抵達機場還車並準備登機報到手續', transportType: 'walk', travelTime: '10' },
           { id: '5-5', category: 'flight', title: '熊本(KMJ) ➔ 高雄小港(KHH) IT767', location: '熊本機場', time: '19:50 起飛 / 21:40 抵達', note: '準備搭機返回溫暖的家', transportType: 'car', travelTime: '0' }
         ]
@@ -740,18 +755,18 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      // 升級至 v15 鍵值，強制清空舊快取並載入最新行程
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v15', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v15', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v15', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v15', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v15', initialPackingList));
+      // 升級至 v17 鍵值，強制清空舊快取並載入最新內容
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v17', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v17', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v17', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v17', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v17', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v15', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v15', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v15', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v15', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v15', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v17', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v17', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v17', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v17', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v17', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
