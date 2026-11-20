@@ -273,7 +273,7 @@
       </div>
     </div>
 
-    <!-- 4. 注意事項 Tab (新增熊本機場退稅注意事項) -->
+    <!-- 4. 注意事項 Tab -->
     <div v-if="currentTab === 'notes'" class="space-y-4">
       <div class="bg-gradient-to-r from-gray-700 to-kuma-black text-white rounded-2xl p-4 shadow-md text-center"><div class="text-base font-black tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-2"></i>注意事項</div></div>
       
@@ -288,7 +288,7 @@
         </div>
       </div>
 
-      <!-- 熊本機場退稅注意事項 (2026/11/1 新制) -->
+      <!-- 熊本機場退稅注意事項 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
           <i class="fa-solid fa-receipt text-kuma-red mr-2"></i>熊本機場退稅注意事項 (新制)
@@ -544,10 +544,9 @@
         { city: '福岡', temp: '--', condition: '載入中', icon: 'fa-solid fa-spinner fa-spin', color: 'text-gray-400', bg: 'bg-gray-100' }
       ]);
 
-      // 修復天氣 API 抓取與逾時保護機制
       const fetchWeather = async () => {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒逾時自動切換備用溫度
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         try {
           const [resK, resF] = await Promise.all([
@@ -682,11 +681,12 @@
           { id: '1-4', category: 'shopping', title: '櫻町購物中心', hours: '10:00 - 20:00', note: '複合式大型購物中心，逛街購物', transportType: 'walk', travelTime: '5' },
           { id: '1-5', category: 'food', title: '櫻町、上通、下通 (晚餐)', hours: '依各店家而定', note: '推薦品嚐熊本在地美食', transportType: 'walk', travelTime: '0' }
         ],
-        // DAY 2 (4/24)
+        // DAY 2 (4/24 - 加入阿蘇卡德利動物園於第一站)
         [
-          { id: '2-1', category: 'spot', title: '道之驛阿蘇', hours: '09:00 - 18:00', note: '品嚐阿蘇牛奶、布丁與購買在地特產', transportType: 'car', travelTime: '10' },
+          { id: '2-0', category: 'spot', title: '阿蘇卡德利動物園', hours: '09:30 - 17:00', ticket: '成人 2,600日圓', note: '建議一開園先去，可看小熊、水豚與動物劇場表演', transportType: 'car', travelTime: '3' },
+          { id: '2-1', category: 'spot', title: '道之驛阿蘇', hours: '09:00 - 18:00', note: '就在動物園旁，品嚐阿蘇牛奶、布丁與購買特產', transportType: 'car', travelTime: '10' },
           { id: '2-2', category: 'spot', title: '阿蘇神社＋門前町', hours: '09:00 - 17:00', note: '參拜歷史名社，順遊門前町吃馬肉可樂餅', transportType: 'walk', travelTime: '3' },
-          { id: '2-3', category: 'food', title: '赤牛丼午餐', hours: '11:00 - 15:00', note: '推薦門前町「いまきん食堂」等阿蘇名物赤牛丼', transportType: 'car', travelTime: '30' },
+          { id: '2-3', category: 'food', title: '赤牛丼午餐', hours: '11:00 - 15:00', note: '推薦門前町「いまきん食堂」等名店（若排隊太久建議改吃周邊店家）', transportType: 'car', travelTime: '30' },
           { id: '2-4', category: 'spot', title: '草千里', hours: '全天開放', note: '遼闊草原與馬匹，可在草千里咖啡廳休息', transportType: 'walk', travelTime: '3' },
           { id: '2-5', category: 'spot', title: '阿蘇火山博物館（看體力決定）', hours: '09:00 - 17:00', ticket: '成人 1,100日圓', note: '緊鄰草千里停車場，視當日體力與時間彈性參觀', transportType: 'car', travelTime: '65' },
           { id: '2-6', category: 'other', title: '返回熊本', hours: '-', note: '結束阿蘇之旅，開車返回熊本市區', transportType: 'car', travelTime: '0' }
@@ -718,7 +718,6 @@
         ]
       ];
 
-      // 伴手禮清單 (修復芥末蓮藕片照片路徑)
       const initialShopping = [
         { id: 1, name: '菓子之香梅「陣太鼓」', where: '熊本站「肥後よかモン市場」內有香梅門市；市區亦有多家直營店。', image: 'image_bca012.jpg', icon: 'fa-solid fa-cookie', color: 'text-amber-600' },
         { id: 2, name: 'Fujibambi「黑糖甜甜圈棒」', where: '鶴屋百貨、主要伴手禮店與品牌官方通路。', image: 'image_f0a82b.jpg', icon: 'fa-solid fa-cookie-bite', color: 'text-amber-800' },
@@ -741,18 +740,18 @@
         return saved ? JSON.parse(saved) : defaultData;
       };
 
-      // 升級至 v14 鍵值，強制清空舊快取
-      const itineraryData = ref(loadData('kuma_itinerary_2027_v14', initialItinerary));
-      const shoppingList = ref(loadData('kuma_shopping_2027_v14', initialShopping));
-      const expenses = ref(loadData('kuma_expense_2027_v14', initialExpenses));
-      const mustEatList = ref(loadData('kuma_food_2027_v14', initialMustEatList));
-      const packingList = ref(loadData('kuma_packing_2027_v14', initialPackingList));
+      // 升級至 v15 鍵值，強制清空舊快取並載入最新行程
+      const itineraryData = ref(loadData('kuma_itinerary_2027_v15', initialItinerary));
+      const shoppingList = ref(loadData('kuma_shopping_2027_v15', initialShopping));
+      const expenses = ref(loadData('kuma_expense_2027_v15', initialExpenses));
+      const mustEatList = ref(loadData('kuma_food_2027_v15', initialMustEatList));
+      const packingList = ref(loadData('kuma_packing_2027_v15', initialPackingList));
 
-      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v14', JSON.stringify(newVal)), { deep: true });
-      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v14', JSON.stringify(newVal)), { deep: true });
-      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v14', JSON.stringify(newVal)), { deep: true });
-      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v14', JSON.stringify(newVal)), { deep: true });
-      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v14', JSON.stringify(newVal)), { deep: true });
+      watch(itineraryData, (newVal) => localStorage.setItem('kuma_itinerary_2027_v15', JSON.stringify(newVal)), { deep: true });
+      watch(shoppingList, (newVal) => localStorage.setItem('kuma_shopping_2027_v15', JSON.stringify(newVal)), { deep: true });
+      watch(expenses, (newVal) => localStorage.setItem('kuma_expense_2027_v15', JSON.stringify(newVal)), { deep: true });
+      watch(mustEatList, (newVal) => localStorage.setItem('kuma_food_2027_v15', JSON.stringify(newVal)), { deep: true });
+      watch(packingList, (newVal) => localStorage.setItem('kuma_packing_2027_v15', JSON.stringify(newVal)), { deep: true });
 
       const currentDayItems = computed(() => itineraryData.value[selectedDayIdx.value] || []);
 
